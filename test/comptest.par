@@ -1,0 +1,17 @@
+
+# Test out the radius-beta formulae
+
+PROGRAM: Make Comet
+COMET: churyumov-gerasimenko
+KERNEL: churyumovgerasimenko.bsp
+JD: 2452816.50000
+XYZFILE: out.xyz
+PFUNC: simple_coma 0.3 3 -1 4; g
+TOL: 1e-3
+PLANETS: 511
+PLANETLOOKUP: off
+CLOSEAPPROACHES: on
+LTT: no
+# mccomet specific section
+NPARTICLES: 100
+SAVE: beta radius graindensity age origin v_ej r_i v_i t_i r_f v_f t_f

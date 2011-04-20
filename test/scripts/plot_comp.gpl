@@ -1,0 +1,18 @@
+set logscale y
+set logscale x
+set xlabel "Radius (microns)"
+set ylabel "Beta"
+set xr [0.1:1e4]
+set yr [1e-4:10]
+set pointsize 1
+plot "comp-g.xyz.log" using 2:3 with p pt 5 title "Geometric"
+replot "comp-ac.xyz.log" using 2:3 with p pt 7 title "Am Car"
+replot "comp-ac-d2857.xyz.log" using 2:3 with p pt 4 title "Am Car (D=2.857)"
+replot "comp-ac-d2727.xyz.log" using 2:3 with p pt 4 title "Am Car (D=2.727)"
+replot "comp-ac-d2609.xyz.log" using 2:3 with p pt 4 title "Am Car (D=2.609)"
+replot "comp-ac-d2500.xyz.log" using 2:3 with p pt 4 title "Am Car (D=2.5)"
+replot "comp-ol50.xyz.log" using 2:3 with p pt 3 title "Am Olv 50 (D=3.0)"
+replot "comp-ol50-d2857.xyz.log" using 2:3 with p pt 4 title "Am Olv 50 (D=2.857)"
+replot "comp-ol50-d2727.xyz.log" using 2:3 with p pt 4 title "Am Olv 50 (D=2.727)"
+replot "comp-ol50-d2609.xyz.log" using 2:3 with p pt 4 title "Am Olv 50 (D=2.609)"
+replot "comp-ol50-d2500.xyz.log" using 2:3 with p pt 4 title "Am Olv 50 (D=2.5)"

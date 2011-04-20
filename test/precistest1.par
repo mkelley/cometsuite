@@ -1,0 +1,14 @@
+PROGRAM: make comet
+COMET: encke
+KERNEL: encke.bsp
+JD: 2450643.5417
+XYZFILE: precistest1.xyz
+PFUNC: age 1000 1000; logradius -1 4; q_d iso; velocity iso 0.5;
+TOL: 0.01
+PLANETS: 511
+PLANETLOOKUP: 0
+CLOSEAPPROACHES: 1
+BOX: -1
+LTT: 0
+SAVE: radius graindensity beta age origin v_ej r_i v_i t_i r_f v_f t_f
+NPARTICLES: 10000

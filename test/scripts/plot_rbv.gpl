@@ -1,0 +1,9 @@
+set logscale y
+set logscale x
+set xlabel "Radius (microns)"
+set ylabel "Beta"
+set zlabel "v_ej (km/s)"
+splot "rbvtest-g.dat" using 1:2:3 with p pt 5 title "Geometric"
+replot "rbvtest-ac.dat" using 1:2:3 with p pt 5 title "Am Car"
+replot "rbvtest-ol50.dat" using 1:2:3 with p pt 5 title "Am Olv 50"
+replot "rbvtest-ol50-rho1.dat" using 1:2:3 with p pt 5 title "Am Olv 50 (rho=1)"

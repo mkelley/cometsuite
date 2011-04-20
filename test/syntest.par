@@ -1,0 +1,25 @@
+# this is a comment
+#
+# Comet Encke during the ISO observation of Reach et al. (2000, Icarus)
+#
+PROGRAM: Syndynes
+# parameters common to all programs
+COMET: encke
+KERNEL: encke.bsp
+JD: 2450643.50000
+XYZFILE: syntest.xyz
+LABEL: encke-%d
+# PFUNC:
+TOL: 1e-2
+PLANETS: 511
+PLANETLOOKUP: off
+CLOSEAPPROACHES: on
+LTT: no
+# syndyne specific section
+BETA: 1e-3 2e-3 4e-3 6e-3 8e-3 1e-2 1e-1
+NDAYS: 200
+STEPS: 31
+ORBIT: 5
+# mccomet specific section
+NPARTICLES:
+SAVE: beta radius graindensity age origin v_ej r_i v_i t_i r_f v_f t_f label

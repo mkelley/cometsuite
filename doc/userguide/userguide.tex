@@ -1,0 +1,176 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[pdftex]{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{alltt}
+\usepackage{listings}
+\usepackage{natbib}
+\bibpunct{(}{)}{;}{a}{}{,}
+\usepackage[pdftex,colorlinks,bookmarks,citecolor=blue,%
+  bookmarksnumbered,bookmarksopen=true,breaklinks,%
+  hyperfootnotes=false]{hyperref}
+\usepackage[width=6.5in,height=9in]{geometry}
+\usepackage{setspace}
+
+\newcommand\micron{\mbox{$\mu$m}}%
+\newcommand\arcdeg{\mbox{$^\circ$}}%
+\newcommand\arcmin{\mbox{$^\prime$}}%
+\newcommand\arcsec{\mbox{$^{\prime\prime}$}}%
+\newcommand\phm[1]{\phantom{#1}}%
+\newcommand\nodata{ ~$\cdots$~ }%
+\newcommand\inv{$^{-1}$}
+\newcommand\mjysr{MJy~sr$^{-1}$}
+\newcommand\invrho{~$\rho^{-1}$}
+\newcommand\kms{km~s$^{-1}$}
+\newcommand\wcm{W~cm$^{-2}$~\micron$^{-1}$}
+\newcommand\gcm{g~cm$^{-3}$}
+\newcommand\mks{J~K$^{-1}$~m$^{-2}$~s$^{-1/2}$}
+\newcommand\degr{\arcdeg}%
+\newcommand\Sun{\sun}% Sun symbol, "S"
+\newcommand\sun{\odot}%
+\newcommand\sst{\textit{Spitzer Space Telescope}}
+\newcommand\spitzer{\textit{Spitzer}}
+\newcommand\iso{\textit{ISO}}
+\newcommand\isolong{\textit{Infrared Space Observatory}}
+\newcommand\rundynamics{RunDynamics}
+\newcommand\cs{CometSuite}
+\newcommand\bvec[1]{\boldsymbol{#1}}
+
+
+\begin{document}
+\title{CometSuite}
+\author{Michael S. Kelley\\
+Department of Astronomy\\
+University of Maryland, College Park\\
+{\small msk @t astro.umd.edu}}
+
+\date{03 Apr 2009}
+\maketitle
+\tableofcontents
+
+\clearpage
+
+\section{Introduction}
+\cs{} is a set of C/C++ and IDL programs primarily designed for
+modeling and analysing comet dust dynamics.  The \cs{}:~IDL programs
+are used to determine comet, planet, and \spitzer{} positions in the
+solar system; and to compute comet ephemerides for an arbitrary
+observer.  The \cs{}:~\rundynamics{} programs simulate comet dust
+dynamics; create syndyne files suitable for use in SAOImage/DS9;
+create projected images of a comet simulation; and to inspect and
+verify \rundynamics{} data files.
+
+This document is a description of the theory and implementation of the
+\cs{} dynamical model, dust grain model, and synthetic imager.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% dust dynamics
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Dust Dynamics}\label{sec:dynamics}
+
+\lstset{language=csh,basicstyle=\normalsize\ttfamily\singlespacing,
+  showstringspaces=false,columns=fullflexible}
+
+\subsection{The integrator RADAU15}
+
+
+\subsection{Ejection from the comet nucleus}
+
+Start with the comet's heliocentric velocity and position (and
+HORIZONS).
+
+
+location on the nucleus
+
+
+\subsubsection{Grain speed}
+
+size dependence
+
+location dependence
+
+\subsubsection{Grain direction}
+
+location dependence
+
+\subsection{Dust in solar orbit}
+
+beta parameter
+
+\subsection{Planetary perturbations}
+
+gravitational forces from the planets
+
+including/excluding planets
+
+Ceres, Vesta, Juno?
+
+\subsection{Relativistic corrections}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% dust grains
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Dust Grains}\label{sec:grains}
+
+\subsection{Grain sizes}
+
+the primary dust parameter
+
+size distributions
+
+\subsection{Grain composition}
+
+carbon and silicates
+
+indices of refraction
+
+other compositions?  organics?  ices?
+
+\subsection{Grain structure}
+
+fluffy aggregates
+
+monomer sizes
+
+fractal dimension
+
+effective medium theory
+
+Maxwell Garnet vs Bruggeman
+
+
+\subsection{Computing $\beta$}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% comet dust production
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Comet dust production}\label{sec:dustproduction}
+
+As a function of time: uniform
+
+Grain weighting in the synthetic imager
+
+Restrict by beta/radius/age range
+
+As a function of heliocentric distance: rh cutoff
+
+
+
+
+\subsection{}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{thebibliography}{}
+\bibitem[Standish(2006)]{standish06} Standish, E.~M.\ 2006, JPL IOM,
+  343.R-06-002
+
+\bibitem[Folkner et al.(2008)]{folkner08} Folkner, W.~M., Williams,
+  J.~G., \& Boggs, D.~H.\ 2008, JPL IOM, 343R-08-003
+
+\end{thebibliography}
+
+\end{document}

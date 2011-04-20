@@ -1,0 +1,11 @@
+set pointsize 2.0
+set term X11 0 font "-*-helvetica-medium-r-*-*-16-*-*-*-*-*-*-*"
+load "scripts/plot_psd.gpl"
+set term X11 1 font "-*-helvetica-medium-r-*-*-16-*-*-*-*-*-*-*"
+load "scripts/plot_accutest.gpl"
+set term X11 2 font "-*-helvetica-medium-r-*-*-16-*-*-*-*-*-*-*"
+load "scripts/plot_bindata.gpl"
+set term X11 3 font "-*-helvetica-medium-r-*-*-16-*-*-*-*-*-*-*"
+load "scripts/plot_jettest.gpl"
+set term X11 4 font "-*-helvetica-medium-r-*-*-16-*-*-*-*-*-*-*"
+load "scripts/plot_comp.gpl"

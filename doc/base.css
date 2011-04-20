@@ -1,0 +1,8 @@
+div.node {
+    color: white;
+    background: #87d;
+}
+
+table td { border: 1px inset black; }
+table tr { border: 1px outset black; }
+

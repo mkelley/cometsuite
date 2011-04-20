@@ -1,0 +1,14 @@
+PROGRAM: Make Comet
+COMET: churyumov-gerasimenko
+KERNEL: churyumovgerasimenko.bsp
+JD: 2452816.5
+XYZFILE: btvtest.xyz
+PFUNC: rtv_grid 3 -1 3 0 10 0.1 0.3
+TOL: 1e-2
+PLANETS: 255
+PLANETLOOKUP: off
+CLOSEAPPROACHES: on
+LTT: no
+BOX: -1
+NPARTICLES: 10000
+SAVE: beta age origin r_i v_ej r_f

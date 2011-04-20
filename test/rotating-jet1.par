@@ -1,0 +1,20 @@
+# CometSuite 0.9.1-dev
+PROGRAM: syndynes
+COMET: encke
+KERNEL: encke.bsp
+JD: 2450643.5417
+XYZFILE: rotating-jet1.xyz
+# pole and period from Samarasinha et al. 2004, Comets II: RA=205,
+# Dec=3 (N/S ambiguous)
+PFUNC: VELOCITY iso 1.0; POLE 202 12.5; JET 0 45 0 11.0; COMPOSITION ac;
+TOL: 0.01
+PLANETS: 511
+PLANETLOOKUP: 0
+CLOSEAPPROACHES: 1
+BOX: -1
+LTT: 0
+SAVE: radius beta age origin r_i v_ej r_f
+BETA: 0.001
+NDAYS: 3
+STEPS: 360
+ORBIT: -1

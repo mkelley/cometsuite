@@ -1,0 +1,8 @@
+set logscale y
+set logscale x
+set xlabel "Size (microns)"
+set ylabel "Flux (Jy)"
+set xr [0.1:1e4]
+plot "therm-g-10.dat" using 1:2 with p pt 5 title "Geometric"
+replot "therm-ac-10.dat" using 1:2 with p pt 5 title "Am Car"
+replot "therm-ol50-10.dat" using 1:2 with p pt 5 title "Am Ol 50"

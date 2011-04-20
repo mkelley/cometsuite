@@ -1,0 +1,22 @@
+
+set term svg fsize 18
+set output "/dev/null"
+load "scripts/plot_psd.gpl"
+set output "rd-psdtest.svg"
+replot
+reset
+
+set term svg fsize 18
+set output "/dev/null"
+load "scripts/plot_accutest.gpl"
+set output "rd-accutest1.svg"
+replot
+reset
+
+set term svg fsize 18
+set output "/dev/null"
+load "scripts/plot_bindata.gpl"
+set output "rd-accutest2.svg"
+replot
+reset
+

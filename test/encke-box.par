@@ -1,0 +1,14 @@
+     PROGRAM: make comet
+     COMET: encke
+     KERNEL: encke.bsp
+     JD: 2450643.54170
+     XYZFILE: encke-box.xyz
+     PFUNC: velocity iso 1.02; q_d iso; suncone 0 90; logradius 2 4; age 0 36;
+     TOL: 0.01
+     PLANETS: 511
+     PLANETLOOKUP: 0
+     CLOSEAPPROACHES: 1
+     BOX: 10000
+     LTT: 0
+     SAVE: radius graindensity beta age origin r_i v_ej r_f
+     NPARTICLES: 1000

@@ -1,0 +1,32 @@
+
+Newsworthy notes for users of CometSuite.
+Copyright (C) 2010 Michael S. Kelley
+
+0.9.1 (21 Jan 2011)
+
+* Important bug fix:  Pfunctions set with linear minima and maximum,
+  but picked in log space where not properly executed: a call to log()
+  should have been a call to log10().  Thus setting size limits with
+  RADIUS min max instead of LOGRADIUS min max picked grain sizes from
+  10**log(min) to 10**log(max) instead of 10**log10(min) to
+  10**log10(max).  I think that radius is the only distribution that
+  can be set with linear limits, but is picked in log space, so I
+  don't expect any other consequences beyond the RADIUS pfunc.  All
+  the other log() calls for pfunc distributions seem legitimate.
+
+* Bug fix: When thermal mode and scattering mode are both disabled in
+  xyz2fits, the resulting image was still converted to surface
+  brightness (units: sr^-1).  The image should instead be unitless,
+  and has been corrected.
+
+* New particle functions JET and IMPACT.
+
+0.9.0 (28 July 2010)
+
+* Important bugfix from the 0.8.x series.  Grain ages in xyz2fits
+  results were off by a factor of 86400.  This bug may have been
+  introduced in v0.8.2.  v0.9 is working correctly and has been
+  verified to work on v0.7 files.
+
+* integratexyz, a program to advance an xyz file by a specified amount
+  of time, is ready for use.

@@ -1,0 +1,6 @@
+set logscale y
+set logscale x
+set xlabel "Radius (microns)"
+set ylabel "Number"
+plot "mctest.psd" using 1:2 with p pt 5 title "Test data"
+replot 1000*x**-1 with l lt 3 lw 2

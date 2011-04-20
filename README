@@ -1,0 +1,16 @@
+CometSuite simulates comet dust and its dynamics.
+Copyright (C) 2009 Michael S. Kelley
+
+The directory tree holds the CometSuite, a set of programs for
+simulating comet dust dynamics.
+
+The file INSTALL in this directory explains how to build and install
+the package.
+
+The file NEWS lists news worthy item for users of CometSuite (e.g.,
+version history).
+
+Comments are welcome.
+
+    - Michael S. Kelley <msk@astro.umd.edu>
+

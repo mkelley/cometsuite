@@ -1,0 +1,87 @@
+CometSuite Installation Instructions
+Copyright (C) 2009,2010 Michael S. Kelley <msk@astro.umd.edu>
+
+Table of Contents
+=================
+
+    * Requirements
+    * Basic Installation
+    * 32 vs. 64-bit
+    * Installed files
+    * SPICE Kernels
+
+Requirements
+============
+
+CometSuite requries libgetxyz, available at:
+
+    http://www.astro.umd.edu/~msk/projects/dust-dynamics/
+
+Also required are cfitsio and CCfits from NASA's High Energy
+Astrophysics Science Archive Research Center:
+
+    http://heasarc.gsfc.nasa.gov/
+
+The error "ranlib: for architecture: x86_64 file:
+libcfitsio.a(drvrgsiftp.o) has no symbols" can be ignored when
+compiling cfitsio.
+
+Basic Installation
+==================
+
+Briefly, the shell commands:
+
+    ./configure
+    make
+
+should configure and build the package.  Additionally,
+
+    make install
+
+will install it.  There are two configure options immediately relevant
+to the CometSuite user:
+
+    --prefix=/path/for/installation
+
+I recommend setting --prefix to a CometSuite specific directory, such as:
+
+    --prefix=$HOME/Projects/cometsuite
+
+although any location, such as /usr/local/, will do.
+
+Now, build and install CometSuite:
+
+    ./configure --prefix=$HOME/Projects/cometsuite
+    make
+    make install
+
+Then, optionally, add prefix/bin to your path.  For tcsh:
+
+     setenv PATH ${PATH}:$HOME/Projects/cometsuite/bin
+
+
+32 vs 64-bit
+============
+
+If you need to specify your system's architechure when comiling
+CometSuite, do so at the configuration step:
+
+    ./configure ... CFLAGS="-m32" CXXFLAGS="-m32"
+
+where -m32 is for a 32-bit compilation, and can be replaced with -m64
+for a 64-bit compliation.
+
+Installed Files
+===============
+
+The installed CometSuite consists of the executable files
+(rundynamics, syn2ds9, xyz2fits, xyz2psd, xyzinfo) and a few FITS
+files to prefix/share.  CometSuite uses the FITS files to lookup a
+grain temperature given the grain composition.
+
+SPICE Kernels
+=============
+
+Comet and planet positions are obtained via libgetxyz.  See
+doc/usersguide.pdf for CometSuite specific information on SPICE
+kernels.

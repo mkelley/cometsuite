@@ -1,0 +1,790 @@
+2011-01-21  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.9.1 released.
+
+2010-10-31  Michael S. Kelley <msk@astro.umd.edu>
+
+	* pfunctions.cc: Now returns with an error when it does not
+	recognize a requested particle function.
+
+2010-09-30  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Distribution.cc (min, max): Was using log(m) instead of
+	log10(m)!  Fixed.
+
+	* pfunctions.cc, pfunctions.h (latitude): Added to handle ejection
+	at particular latitudes.
+
+	* pfunctions.cc (setup): Added IMPACT pfunction template.
+
+	* xyzImage.cc (createImages): Only convert to surface brightness
+	units if thermalMode or scatteringMode is enabled.
+
+2010-09-27  Michael S. Kelley <msk@astro.umd.edu>
+
+	* pfunctions.cc, pfunctions.h (jet): Added jet() to handle jets.
+
+	* Vej.cc, Vej.h (next): Modified the parameter list to accept time as a
+	parameter.  Pass time on to getDirection().
+
+	* Vej.cc, Vej.h (getDirection): Accept time as a parameter and use
+	it to compute the orientation of jets.
+
+	* Vej.cc, Vej.h (period, frequency): Added the parameter _period
+	and corresponding functions for rotating jets and the like.  Also
+	added the variable _angfreq, without any public access methods.
+
+	* Vej.h (Direction): Added JET.
+
+	* particle.cc (next): Modified call to vejGen.next() to include
+	time.
+
+	* Vej.cc, Vej.h (axis): Added axis(longlat).
+
+	* Vej.cc, Vej.h (jet): Added a method to set the jet ejection.
+
+	* Vej.h: Now inherits CoordTrans.
+
+	* paramSet.cc: User doc fix.
+
+2010-08-06  Michael S. Kelley <msk@astro.umd.edu>
+
+	* xyz2psd.cc: Doc fix.
+
+2010-07-29  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Development version 0.9.1.
+
+	* xyz2fits.cc: Renamed option --fscale to --fscales since it
+	really is a vector.  --fscale will still work, though.
+
+	* jettest.cc: Eject the normally distributed velocities over the
+	entire nucleus, and change the velocities a bit to make them
+	easier to see in the test plot.
+
+	* xyzHist.cc (createPSD): Now catches xyzProject::readError
+	like it should.
+
+	* particleWeights.cc (nuclearPsdWeight): Corrected an error in the
+	Hanner GSD function.  The formula used (a - a0 / a)^M, but should
+	have used (1 - a0 / a)^M.
+
+	* rundynamics.h: Added parseCommandLineFlags.
+
+	* rundyanmics.cc (main, parseCommandLine): Updated to use
+	parseCommandLineFlags.
+
+2010-07-28  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.9.0 released.
+
+2010-07-27  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Development version 0.8.3.
+
+	* paramSet, particleWeights, pfunctions, projection, xyzHist,
+	xyzImage, xyzProject, syn2ds9, xyz2fits, xyz2psd: Change vectors
+	to valarrays wherever it is appropriate.  This modification ended
+	up being difficult because valarray isn't as fully featured as
+	vector.  Some valarrays were changed back to vectors.
+
+	* particleWeights.h, particleWeights.cc: The vector _fileScale
+	is renamed _fileScales.
+
+	* StringConv.h, StringConv.cc: New class to handle string
+	conversions to vectors and valarrays.
+
+	* pfunctions.cc (velocity): Found a possible bug that appeared to
+	not set a maximum velocity for the pfunction "velocity limit v0min
+	v0max steps", when steps was defined.
+
+	* Dynamical.cc (age): The age image in xyz2fits is too small by a
+	factor of 86400, as well as average age in xyzinfo.  Since I can't
+	find this problem (xyzstream seems OK to me), I am changing
+	particle.age() to take and return the age in seconds, rather than
+	days.  The difference between age and istate.t is now a factor of
+	-1.
+
+	* planet_lookup.c (planet_lookup_init): Takes nSeconds instead of
+	nDays.
+
+	* Integrator.cc (setup): Divide age_max by 86400 in first
+	parameter of call to planet_lookup_init.  Fix syndyne setup to
+	queue ages and set age_max in units of seconds.
+
+	* Integrator.cc (writeOrbit): Change variable age to ageDays to
+	avoid confusion.
+
+	* xyz2fits.cc, xyz2psd.cc (parseCommandLine): Convert the user's
+	input to seconds for ageRange.
+
+	* xyz2fits.cc (printParameters, writeParameters): Divide ageRange
+	by 86400 before printing/writing.
+
+	* xyzstream (readParticle, writeParticle): Since age has always
+	been saved as seconds, remove all the conversions from seconds to
+	days.
+
+	* ra15.cc (integrate): Remove some now obsolete 86400s.  Divide
+	age() by 86400 for the run-time status strings.  Changed box
+	comparison to d^2 <= box^2 to reduce the number of operations per
+	particle.
+
+	* accutest.cc (main): Divide age() by 86400 * 365.25 to convert to
+	years.
+
+	* particle.cc (next): Divide age() by 86400 when computing Julian
+	date, and when outputting debug info
+
+	* particle.cc (operator<<): Divide age() by 86400.
+
+	* pfunctions.cc (age): Still takes ages in days as input, but
+	calls to ageDist are now using seconds.
+
+	* paramSet.cc (pFunc): Ensures that _pFunc is all lower-case.
+
+	* paramSet.cc (paramSet): The units of age was listed as days but
+	is actually seconds.  The units have been corrected and will now
+	be listed as seconds.
+
+	* xyzImage.cc (createImages): age() converted from seconds to
+	days.
+
+	* xyzinfo.cc (main): Correctly print out age as days.
+
+	* xyzHist (createPSD): The variables that are used to compute
+	angular distance were renamed rx, ry, and rz to avoid confusion
+	with an x defined later.
+
+	* paramSet.cc (paramSet, exampleParameters): Set the paramSet
+	defaults to the example parameters.  The call to
+	exampleParameters() now prints out the default parameterSet.
+	Moved all the extended comments into writeParameters() and added
+	the extended flag.
+
+2010-07-19  Michael S. Kelley <msk@astro.umd.edu>
+
+	* xyzstream.h: Added some enums for parameter reading/writing.
+
+	* xyzstream.cc (readParticle): Rewritten for optimization.
+
+	* xyzstream.cc (initData): Optimized by adding _parameterOrder and
+	_IOMethod.
+
+	* xyzstream.cc, xyzstream.h (readCArray, readIArray, readDArray,
+	readVector, readState, readLL, writeCArray, writeIArray,
+	writeDArray, writeD, writeVector, writeState, writeLL): New
+	functions.
+
+	* test/Makefile: Added savetest target.
+
+	* test/savetest.par: New file for testing save parameter lists.
+
+	* Version 0.8.2 released.
+
+2010-07-10  Michael S. Kelley <msk@astro.umd.edu>
+
+	* paramSet.cc (exampleParameters): Added "label" to the list of
+	available save variables.  Described LABEL parameter directive.
+
+	* paramSet.cc (setParameter): Added LABEL.
+
+	* paramSet.cc, paramSet.h (prefix): Added label format functions
+	and _labelFormat.
+
+	* particle.cc, particle.h: Added label functions: label(),
+	label(string), and generateLabel(long).  Overloaded next() so that
+	an optional integer may be passed for the label generation.
+
+	* particle.cc (particle): Initialize label and prefix.
+
+	* particle.cc (operator<<): Added label output.
+
+	* xyzstream.cc (readParticle, writePartcile): Added a new label
+	field for particles.
+
+	* Integrator.cc (calculateOne): Added grain number to call to
+	_particle.next() and writeOrbit().
+
+	* Integrator (writeOrbit): Added grain number and label
+	generation.
+
+2010-06-22  Michael S. Kelley <msk@astro.umd.edu>
+
+	* GrainTemperature.cc (load): Appended "/" to _DATADIR when
+	looking for composition files.  Added better feedback when a
+	composition file cannot be located.
+
+	* paramSet.cc (loadParameters): Updated to use libgetxyz's
+	findkernel() instead of finding kernels it self.
+
+	* paramSet.cc (exampleParameters): Updated for the "VELOCITY
+	normal" pfunction.
+
+	* accutest.cc: Updated to use libgetxyz's findkernel() instead of
+	finding kernels it self.
+
+	* configure.ac: Removed --with-kernel-path option.
+
+	* jettest.cc: Added a normally distributed isotropic outflow test.
+
+	* pfunctions.cc: Updated for NORMAL distributions.
+
+	* Vej.cc: Updated for NORMAL distributions.
+
+	* particle.cc (particle): Added defaults for vejGen mu and sigma.
+
+	* Distribution.h, Distribution.cc: Added dn_dx__normal(), _mu, and
+	_sigma, added the NORMAL case.
+
+	* randtest.cc: New program for testing random number generation.
+
+	* INSTALL: Updated the 32-bit/64-bit instructions.  Removed most
+	of the SPICE kernel discussion (it was duplicated from libgetxyz).
+
+2010-05-27  Michael S. Kelley <msk@astro.umd.edu>
+
+	* xyzImage.cc (writeImages): Added a image weight comment to the
+	FITS header.
+
+	* integratexyz.cc: Created.
+
+	* paramSet.cc, paramSet.h: isIntegrateXYZ() created.
+
+	* Integrator.cc (setup): Updated to handle Integrate XYZ mode.
+
+	* particle.cc (next): Updated to handle Integrate XYZ mode.
+
+	* xyzstream.cc, xyzstream.h: Added readParameters().
+
+	* ra15.cc (integrate): Modified to allow integrations forward or
+	backward in time.  Skip the rh test if we are in Integrate XYZ
+	mode.
+
+2010-04-02  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Updated INSTALL with OSX notes.
+
+	* Version 0.8.1 released.
+
+2010-03-08  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.8.0 released.
+
+2009-11-17  Michael S. Kelley <msk@astro.umd.edu>
+
+	* am-carbon.fits, am-olivine.fits: Now installed to prefix/share
+	by default.
+
+	* GrainTemperature.cc (load): Now checks several directories for
+	the FITS composition files, including the new installation
+	directory.
+
+	* test/Makefile: Converted test Makefile to work with the new
+	distribution layout.
+
+2009-11-16  Michael S. Kelley <msk@astro.umd.edu>
+
+	* rundynamics.cc, syn2ds9.cc, vtest.cc, xyz2fits.cc, xyz2psd.cc,
+	xyzinfo.cc: Replaced references to PROJECT + VERSION with
+	PACKAGE_STRING.
+
+	* rundynamics.cc: PROJECT is now defined as cometsuite in
+	config.h, so adding SUBPROJECT to this file.
+
+2009-11-14  Michael S. Kelley <msk@astro.umd.edu>
+
+	* CometSuite: Forked get_xxx_xyz functions and files to a new
+	library, libgetxyz.
+
+	* main.cc: Renamed rundynamics.cc.
+
+	* rundynamics.h (VERSION, PROJECT): removed since they are now
+	defined in config.h.
+
+	* CometSuite: Reorganization from cometsuite-0.3,
+	rundynamics-0.7.6 using GNU autotools, etc.
+
+2009-11-05  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.7.6 released.
+
+	* rundynamics.h: Version update for particleWeights.cc.
+
+	* particleWeights.cc: Corrected a bug that incorrectly set the
+	logarithmic slope for particle side distributions of the form a^x.
+
+2009-06-09  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.7.5 released.
+
+	* rundyanmics.h: Version update.
+
+	* Distribution.h, Distribution.cc: logZero and emptySequence
+	properly initialized in Distribution.cc, rather than
+	Distribution.h.
+
+2009-04-08  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.7.4 released.
+
+	* rundynamics.h: Version update for xyzstream.cc.
+
+	* xyzstream.cc: Moved BETA in SAVE parameter list from the first
+	  parameter to the third parameter to be consistent with the new
+	  default save list for v0.7.3 (this should only affect file I/O
+	  speed).
+
+2009-04-02  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Verstion 0.7.3 released.
+
+	* Composition.h: First appearance.
+
+	* Physical.h: Changed betaDist to radiusDist; changed density to
+	graindensity; added updateBeta(), updateRadius(), and
+	updateGrainDensity(); added grainT.
+
+	* Physical.cc: Updated to use Composition; radius and beta are now
+	calculated here; density split into bulkdensity and graindensity;
+	added grainT.
+
+2009-04-01  Michael S. Kelley <msk@astro.umd.edu> (no foolin')
+
+	* pfunctions.h: Added materials, composition(), and bulkdensity();
+	updated from beta distributions to radius distributions;
+	structure() renamed fractalDim().
+
+	* paramSet.cc: Fixed saved data units; removed composition and
+	fractaldim from parameter list; renamed density parameter to
+	graindensity; updated default saved parameter list to include
+	radius and graindensity; added rundynamics version number to the
+	parameter file examples.
+
+	* particleWeights.cc: Moved desnity to xyzProject; the weight
+	returned by thermalWeight() is now the observed flux from the
+	grain in question in units of Jy; nuclearPsdWeight() and
+	scatteringWeight() now use radius; I think the old
+	nuclearPSDWeight() for the Hanner grain size distribution was off
+	by a factor of beta^-2; removed fractalDim, a0 stuff.
+
+	* xyzProject.h: loadXyzfile() handles radius calculations (when
+	required), therefore density has been moved here from
+	particleWeights, and renamed graindensity.
+
+	* pfunctions.cc: Added composition() and bulkdensity(), changed
+	beta distributions to radius distributions, btv modules to rtv
+	modules; structure renamed fractaldim.
+
+	* xyz2psd.cc: Updated --psd options to use radius rather than
+	beta; density() changed to graindensity().
+
+	* xyz2fits.cc: Updated --psd options to use radius rather than
+	beta; removed fractal dimension and a0 stuff; density() changed to
+	graindensity().
+
+	* xyzstream.cc: Updated for new default parameter list and new
+	Composition structure; removed composition and fractaldim from
+	readParticle; renamed density to graindensity.
+
+2009-03-31  Michael S. Kelley <msk@astro.umd.edu>
+
+	* GrainTemperature.cc: First appearance.
+
+	* GrainTemperature.h: First appearance.
+
+	* particle.h: Added temperature(), which depends on a grain's
+	physical and dynamical parameters.
+
+	* particleWeights.h: Added planck() and updated thermalWeight(),
+	scatteringWeight(), nuclearPSDWeight(); moved density to
+	xyzProject; removed fractalDim, a0 stuff.
+
+	* xyzProject.cc: loadXyzfile() handles raidus calculations (when
+	required); density moved here from particleWeights.
+
+2009-03-30  Michael S. Kelley <msk@astro.umd.edu>
+
+	* particle.cc: Uses Composition; changed betaDist to radiusist;
+	added temperature().
+
+	* rbvtest.cc: First introduction.
+
+	* xyzImage.cc: Updated thermalWeight(), scatteredWeight(), and
+	nuclearPSDWeight() calls; added an average radius image plane;
+	thermally weighted images are in units of MJy/sr.
+
+2009-03-27  Michael S. Kelley <msk@astro.umd.edu>
+
+	* xyzinfo.cc: Now reports average radius; particle read error is
+	checked before the cumulative sums are updated (this caused
+	xyzinfo to report some weird mean values).
+
+2009-03-26  Michael S. Kelley <msk@astro.umd.edu>
+
+	* projection.h: The heliocentric ecliptic coordinates of the
+	observer can now be accessed via r().
+
+	* main.cc: Added radius to the log file output.
+
+	* projection.cc: The heliocentric ecliptic coordinates of the
+	observer can now be accessed via r().
+
+	* xyzImage.h: Added an average radius image plane.
+
+2009-03-25  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Integrator.cc: Updated for radius distributions instead of beta
+	distributions (though syndynes still use betas).
+
+	* planetlookup.c: Needed to include string.h for the memset
+	function; fixed a bug that kept the planets fixed in space.
+
+	* everhart.c: Added string.h, which is needed for memset.
+
+	* accutest.cc: Added accutest3.xyz.
+
+	* Vej.cc: Changed formulae to use radius instead of beta ($v_{ej}
+	\propto a^{-u1}$); to transform old v0 into new v0 so that the
+	same beta values have the same v_ej. v0_new = v0_old *
+	sqrt(0.57/graindensity).
+
+2009-03-24  Michael S. Kelley <msk@astro.umd.edu>
+
+	* rundynamics.h: Update for new particle picking (radius instead
+	of beta); two new compositions added, amorphous carbon and
+	amorphous olivine 50 (50% Mg), their radius-beta conversions are
+	computed via Mie theory for solid grains, updated my e-mail
+	address.
+
+	* vtest.cc: Added test 3.
+
+2008-11-19  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.7.2 released.
+
+	* rundyanmics.h: Version update for xyz2fits.cc.
+
+	* xyz2fits.cc: Added RHLIMIT to the FITS header.
+
+2008-10-13  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.7.1 released.
+
+	* rundyamics.h: Version update for vtest.cc
+
+	* Vej.cc: Fixed a typo in getSpeed(): rh was multiplied by _AU
+	rather than divided; _u1 and _u2 were not initialized
+
+	* vtest.cc: First introduction
+
+	* pfunctions.cc: rhlaw and betalaw are now actually implemented
+	instead of ignored, 13 Oct 2008
+
+2008-04-28  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.7.0 released.
+
+	* syn2ds9.cc: Updated to use the new xyzstream and particle
+	classes; removed synSetup().
+
+	* main.cc: Uses the new Integrator class; in DEBUG mode the status
+	of every particle is written to the log file.
+
+	* xyzProject.h: Updated to use new xyzstream, Vej, and particle
+	classes; added rhLimit.
+
+	* xyzProject.cc: Updated to use new xyzstream, Vej, and particle
+	classes; added rhLimit; particle.error was not reset to false when
+	a new file was opened (fixed).
+
+	* xyz2fits.cc: Added --rhlimit; removed stray references to a
+	--rho parameter.
+
+	* xyz2psd.cc: Minor clean up; added --rhlimit.
+
+2008-04-25  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Vector.cc: Added cosangle().
+
+	* xyzImage.cc: Uses new (optimized) particleWeight functions; new
+	xyzProject system.
+
+	* Vector.h: Added cosangle().
+
+	* jettest.cc: First introduction.
+
+2008-04-24  Michael S. Kelley <msk@astro.umd.edu>
+
+	* particleWeights.h: Added fractalDim; optimized the weighting
+	functions.
+
+	* xyzstream.h: First introduction; handles all xyz file I/O.
+
+	* xyzinfo.cc: Updated to use new xyzstream class.
+
+	* Integrator.h: First introduction; Created to replace most of
+	ra15.cc, and all of syndynes.cc and mccomet.cc; file I/O moved to
+	xyzstream.
+
+	* xyzstream.cc: First introduction; handles all xyz file I/O.
+
+	* everhart.c: Takes ephemeris time instead of Julian date.
+
+	* planetlookup.c: Uses ephemeris time instead of Julian date.
+
+	* accutest.cc: Updated to use new xyzstream class.
+
+	* particleWeights.cc: Added fractalDim; updated for new particle
+	system; optimized the weighting functions; fixed the thermal and
+	scattering weights---they were ignoring radius and only using beta.
+
+2008-04-23  Michael S. Kelley <msk@astro.umd.edu>
+
+	* longlat.h: First introduced.
+
+	* CoordTrans.h: Modified to use longlat.h; added longlatToVector()
+	functions.
+
+	* CoordTrans.cc: Modified to use longlat.h; added
+	longlatToVector() functions.
+
+	* Physical.h: First appearance.
+
+	* Dynamical.h: First appearance.
+
+	* Vej.cc: Renamed from grainVej.cc to Vej.cc since we can simulate
+	other things than grains, and greatly expanded to implement all
+	ejection velocity methods; lots of adding, renaming and deleting
+	of functions; changed simpleActivity from v0*sqrt(beta/rh) to
+	v0*beta^u1*rh^-u2.
+
+	* rundynamics.h: Version update.
+
+	* ra15.h: Forked most functions to the new Integrator class; only
+	RADAU15 specific elements remain.
+
+	* Physical.cc: First appearance.
+
+	* projection.cc: projection() uses _AU from rundynamics.h.
+
+	* Vej.h: Renamed Vej.h from grainVej.h (we can simulate other
+	things than grains), and greatly expanded to implement all
+	ejection velocity methods; lots of adding, renaming and deleting
+	of functions.
+
+2008-04-22  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Integrator.cc: First introduction; created to replace most of
+	ra15.cc, and all of syndynes.cc and mccomet.cc; file I/O moved to
+	xyzFile
+
+	* Distribution.h: First appearance.
+
+	* ra15.cc: Forked most functions to the new Integrator class; only
+	RADAU15 specific elements remain; fixed up some mix-ups on whether
+	age() returned seconds or days (it returns days); updated the
+	everhart.c calls to use ephemeris time instead of Julian date.
+
+	* Dynamical.cc: First appearance.
+
+2008-04-21  Michael S. Kelley <msk@astro.umd.edu>
+
+	* paramSet.cc: Updated to reflect the new pfunc system, and the
+	new SAVE values (mass has been removed, porosity has been replaced
+	with fractaldim.
+
+2008-04-15  Michael S. Kelley <msk@astro.umd.edu>
+
+	* state.h: First appearance.
+
+	* particle.h: Implements new particle system.
+
+	* pfunctions.h: Complete rewrite to take new PFUNC options.
+
+	* pfunctions.cc: Complete rewrite to take new PFUNC format.
+
+	* particle.cc: Implements a new particle system.
+
+2008-04-15  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.6.2 released.
+
+	* logFile.h: The log file is now based on the output file name;
+	obsolete code (nextLog, BASELOGNAME, MAX_LOG_FILES) has been
+	removed; the logFile constructor now requires a base file name.
+
+	* main.cc: Provide logFile with the xyz file name; renamed the
+	variable outfile to infile (it is the input not output!).
+
+	* logFile.cc: Log files are now output name + ".log"; obsolete
+	code (nextLog) has been removed.
+
+	* rundyanmics.h: Version update; removed log file constants.
+
+2007-08-21  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.6.1 released.
+
+	* rundyanmics.h: Version update.
+
+	* particleWeights.cc: Added scaling by file.
+
+	* xyz2fits.cc: Added scaling by file (--fscale).
+
+	* xyz2psd.cc: Added scaling by file (--fscale).
+
+	* xyzImage.cc: Added rundynamics version stamp; added file
+	scaling.
+
+	* particleWeights.h: Added scaling by file.
+
+	* xyzProject.cc: Fixed a bug that prevented more than one input
+	file from being used (needed xyzStream.clear()).
+
+2007-07-25  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.6.0 released.
+
+	* syn2ds9.cc: Added white to the list of colors; make colors
+	continuous over different files (instead of reseting to the first
+	color each time.
+
+2007-05-24  Michael S. Kelley <msk@astro.umd.edu>
+
+	* rundyanmics.h: Version update.
+
+	* pfunctions.h: Added iso_coma.
+
+	* paramSet.cc: Added iso_coma.
+
+	* pfunctions.cc: Added iso_coma (isotropic dust production).
+
+2007-05-12  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.5.0 released.
+
+	* pfunctions.h: Added btvl function.
+
+	* pfunctions.cc: Added btvl function; fixed a big bug that
+	multiplied angles that should be constant by pi/180 every time new
+	particle is requested in functions btv_jet_grid, one_jet,
+	one_simple_jet, v_impact.
+
+2007-05-07  Michael S. Kelley <msk@astro.umd.edu>
+
+	* xyzProject.h: Added vlimit() methods.
+
+	* rundynamics.h: Version update and #if block added; moved
+	astronomical constants from everhart.c.
+
+	* xyz2fits.cc: Added --vlimit; define SUBPROJECT instead of
+	PROJECT, which is defined in rundynamics.h.
+
+	* everhart.c: Moved astronomical constants to rundynamics.h.
+
+	* xyzProject.cc: Added vlimit() methods.
+
+	* xyz2psd.cc: Define SUBPROJECT instead of PROJECT, which is
+	defined in rundynamics.h.
+
+2007-04-28  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Vector.cc: Added rotate().
+
+	* Vector.h: Added rotate().
+
+	* Vej.cc: First appearance.
+
+	* Vej.h: First appearance for xyzProject.cc.
+
+	* ra15.cc: Added new default saved parameters to the read and
+	write functions.
+
+2007-04-24  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.4.1 released.
+
+	* rundynamics.h: Version update.
+
+	* xyzProject.h: Added readError to xyzProjectFlags.
+
+	* xyzImage.cc: createImages catches readError from
+	xyzProject::nextParticle() (updated from "error").
+
+	* xyzProject.cc: when ra15::read() fails, nextParticle() searches
+	for a new file or throws readError (updated from "error").
+
+2007-04-23  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.4.0 released.
+
+	* paramSet.h: Added a maximum comet-grain distance during
+	integration (box parameter).
+
+	* logFile.h: Added a flush method.
+
+	* main.cc: Added a maximum comet-grain distance during
+	integration (box parameter).
+
+	* paramSet.cc: Added a maximum comet-grain distance during
+	integration (box parameter).
+
+	* logFile.cc: Added a flush method.
+
+	* ra15.cc: Added a maximum comet-grain distance during
+	integration (box parameter).
+
+	* pfunctions.h: Added btv generator; renamed pick_dn_dt__1 to
+	pick_dn_dx__1 and made the function generic; similarly renamed and
+	updated pick_dn_dlogbeta__1.
+
+	* pfunctions.cc: Added btv generator; renamed pick_dn_dt__1 to
+	pick_dn_dx__1 and made the function generic; similarly renamed and
+	updated pick_dn_dlogbeta__1.
+
+2007-04-20  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.3.0 released.
+
+	* xyz2psd.cc: Added support for Sun-zenith angle limits.
+
+	* xyz2fits.cc: Added support for Sun-zenith angle limits.
+
+	* xyzProject.cc: Added support for Sun-zenith angle limits.
+
+	* xyzProject.h: Added support for Sun-zenith angle limits.
+
+2007-04-17  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.2.1 released.
+
+	* xyzinfo.cc: Added some debug info.
+
+	* ra15.cc: Added the ability to set parameters from a stream;
+	added some debug feedback.
+
+	* paramSet.h: Added ability to enable/disable saved data; added
+	paramSet copy constructor.
+
+	* paramSet.cc: Added ability to enable/disable saved data; added
+	"SAVE:" to parameter file and examples; added paramSet copy
+	constructor; default saved data changed to "beta age origin r_i
+	v_ej r_f" (reducing data file size by 1/2).
+
+	* ra15.h: Added the ability to set paramters from a stream; added
+	some debug feedback.
+
+2007-02-25  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Version 0.2.0 released.
+
+	* particleWeights.h: Added support for light scattering.
+
+	* xyzImage.cc: Added support for light scattering.
+
+	* particleWeights.cc: Added support for light scattering.
+
+	* xyz2fits.cc: Added support for light scattering.
+
+	* xyz2psd.cc: Added support for light scattering.

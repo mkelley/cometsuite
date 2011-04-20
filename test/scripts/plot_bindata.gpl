@@ -1,0 +1,9 @@
+set nologscale y
+set nologscale x
+set xlabel "Integration error [log10(km)]"
+set ylabel "Number"
+set yrange [0:16]
+plot "< awk -f scripts/bindata.awk accutest1.dat" using 1:2 \
+  title "29P/Schwassman-Wachmann" with histeps lw 2
+replot "< awk -f scripts/bindata.awk accutest2.dat" using 1:2 \
+  title "28P/Neujmin" with histeps lt 3 lw 2

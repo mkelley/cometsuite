@@ -1,0 +1,8 @@
+set logscale y
+set logscale x
+set xlabel "Wavelength (microns)"
+set ylabel "Flux (Jy)"
+set xr [5:14]
+plot "therm.dat" using 1:2 with l title "Geometric"
+replot "therm.dat" using 1:3 with l title "Am Car"
+replot "therm.dat" using 1:4 with l title "Am Ol 50"

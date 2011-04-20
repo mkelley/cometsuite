@@ -1,0 +1,7 @@
+set logscale y
+set nologscale x
+set xlabel "Particle age (yr)"
+set ylabel "Integration error (km)"
+plot "accutest1.dat" using 2:3 title "29P/Schwassman-Wachmann" with p pt 5
+replot "accutest2.dat" using 2:3 title "28P/Neujmin" with p lt 3 pt 7
+replot "accutest3.dat" using 2:3 title "28P/Neujmin (PlanetLookUp)" with p lt 3 pt 2

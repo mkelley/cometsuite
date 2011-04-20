@@ -1,0 +1,1262 @@
+\input texinfo   @c -*-texinfo-*-
+@c %**start of header
+@setfilename cometsuite.info
+@include version.texi
+@settitle CometSuite @value{VERSION}
+@c %**end of header
+
+@copying
+This manual is for CometSuite version @value{VERSION} (manual revision
+date @value{UPDATED}), a set of programs designed to simulate comet
+dust dynamics.
+
+Copyright @copyright{} 2010 Michael S. Kelley
+
+@end copying
+
+@titlepage
+@title CometSuite
+@subtitle Comet dust dynamics simulator and synthetic imager.
+@subtitle Updated @value{UPDATED}
+@author Michael S. Kelley
+
+@c  The following two commands
+@c  start the copyright page.
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@c So the toc is printed at the start.
+@contents
+
+@ifnottex
+@c -------------------------------------------------------------------
+@node Top
+@top CometSuite
+
+This manual documents CometSuite, version @value{VERSION}, a comet
+dust dynamics simulator and synthetic imager.
+
+@insertcopying
+@end ifnottex
+
+@menu
+* Introduction::About CometSuite
+* Installation::Where to get installation information.
+* SPICE Kernels::How to get and use SPICE kernels for CometSuite.
+* CometSuite Checkout::Test your CometSuite installation.
+* Command-line Tools::The CometSuite programs.
+* Rundynamics Parameter Files::All about parameter files for rundynamics.
+* IDL Tools::
+* Python Tools::
+* Cookbook::Recipes for disaster.
+* GNU Free Documentation License::The License for this documentation.
+@c * Index of Terms::
+@end menu
+
+@c -------------------------------------------------------------------
+@node Introduction
+@chapter Introduction
+@cindex introduction
+
+CometSuite is a set of C/C++, IDL, and Python programs primarily
+designed for modeling and analysing comet dust dynamics, but are also
+useful for observers of solar system objects.  The CometSuite IDL and
+Python programs are used to determine comet, planet, and Spitzer Space
+Telescope positions in the solar system.  The CometSuite command-line
+tools simulate comet dust dynamics; create syndyne files suitable for
+use in SAOImage/DS9; create projected images of a comet simulation;
+and inspect and verify rundynamics data files.
+
+@c -------------------------------------------------------------------
+@node Installation
+@chapter Installation
+@cindex installation
+
+See the INSTALL file distributed with CometSuite for installation
+instructions.
+
+@c -------------------------------------------------------------------
+@node SPICE Kernels
+@chapter SPICE Kernels
+@cindex SPICE kernels
+@cindex kernels
+
+The SPICE kernels relevant to CometSuite mainly contain the states
+(position, velocity, orientation) of solar system bodies and
+spacecraft.  All your kernels should be placed in a kernel directory
+specified when you build and install libgetxyz.
+
+See the libgetxyz documentation for instructions on where to find, and
+how to produce SPICE kernels for CometSuite.
+
+@c -------------------------------------------------------------------
+@node CometSuite Checkout
+@chapter CometSuite Checkout
+@cindex CometSuite checkout
+@cindex CometSuite tests
+@cindex tests
+@cindex checkout
+
+@menu
+* Rundynamics Tests::
+* IDL Tests::
+* Python Tests::
+@end menu
+
+@c -------------------------------------------------------------------
+
+@node Rundynamics Tests
+@section Rundynamics Tests
+@cindex Rundynamics tests
+@cindex tests, Rundynamics
+
+The CometSuite source directory has a set of test programs and
+scripts.  Before you run them, generate SPICE kernels for 2P/Encke,
+28P/Neujmin, 29P/Schwassmann-Wachmann, and 67P/Churyumov-Gerasimenko
+saved as @code{encke.bsp}, @code{neujmin1.bsp},
+@code{schwassmannwachmann1.bsp}, @code{churyumovgerasimenko.bsp} in
+the kernel directory specified when you installed libgetxyz.  You will
+also need @code{gnuplot} to view plots of the results.  Run the test
+suite from the test sub-directory in the CometSuite source:
+@example
+cd cometsuite-0.8.0/test
+make test
+@end example
+
+@subsection File creation and reading tests
+
+The first test creates a set of syndynes and verifies the output file
+can be written properly (the average beta-value should not differ from
+below):
+@example
+../bin/rundynamics syntest.par
+...
+../bin/xyzinfo syntest.xyz
+...
+Average beta: 0.0187143
+Successfully read 217 out of 217 particles
+@end example
+
+The second test is a Monte-Carlo simulation of a comet coma.  The
+average beta-value will vary.
+@example
+../bin/rundynamics mctest.par
+...
+../bin/xyzinfo mctest.xyz
+...
+Average beta: 0.00634739
+Successfully read 100 out of 100 particles
+@end example
+
+The third test checks the particle size distribution of the
+Monte-Carlo simulation using a bin size of 10 mm.  The distribution
+should follow dn/da proportional to a^-1, but keep in mind that there
+were only 100 particles used in the simulation.  beta is picked from
+the range 1e-6 to 0.1.  The result will be shown with Gnuplot after
+completion of all remaining tests.
+@example
+../bin/xyz2psd mctest.xyz -o mctest.psd --aper=-1 -b 10000
+@end example
+
+@subsection Accuracy tests
+
+The fourth and fifth tests are checks on the accuracy of the
+integrator using comets 29P/Schwassman-Wachmann (a nearly circular
+orbit) and 28P/Neujmin (with an eccentricity of 0.78).  Rundynamics
+integrates beta = 0 particles over a time span of 20 years.  These
+comets have no known non-gravitational accelerations, therefore each
+beta = 0 particle should closely follow the position of the comet with
+time.
+
+@example
+../bin/rundynamics accutest1.par ...
+Average beta: 0 Successfully read 21 out of 21 particles
+
+../bin/rundynamics accutest2.par
+...
+Average beta: 0
+Successfully read 21 out of 21 particles
+
+./accutest
+...
+schwassmann-wachmann 1
+age(yr) delta_r(km) delta_v(km/s)
+...
+output written to accutest1.dat
+neujmin 1
+particle age(yr) delta_r(km) delta_v(km/s)
+...
+output written to accutest2.dat
+@end example
+
+@subsection Plots
+
+@quotation Note
+Examples of all plots are found in the @code{data} directory of the
+CometSuite source.  They are also copied to @code{share/cometsuite} in
+the CometSuite installation directory.
+@end quotation
+
+When the test routines complete, Gnuplot plots the results from a few
+of the tests.  To exit Gnuplot type @code{quit}.  You can redisplay
+these plots at any time:
+@example
+cd cometsuite/test
+make plots
+@end example
+
+@indent
+First is the Monte Carlo particle size distribution test
+(@code{rd-psdtest.png}).  The particle size distribution plot shows a
+theoretical trend line and the calculated particle size distribution
+from the entire simulation.  Rundynamics runs all simulations with a
+particle size distribution of dn/dlog(a) proportional to a^-1 to
+ensure each decade of sizes is evenly distributed with particles (for
+``geometric'' grains, a is proportional to beta^1).  The trend line
+will roughly approximate the data points in a successful run.  The
+simulation is only a 1000 grains, so the fit may not be exact.
+
+Next are the two accuracy tests (@code{rd-accutest1.png} and
+@code{rd-accutest2.png}).  The accuracy plots show the differences
+between the test particles and their parent nucleus.  Most particles
+have errors less than 100 km.  The oldest comet Neujmin particles show
+a trend of increasing error at the oldest ages.  The integrator
+appears to have some difficulty with perihelion passages in orbits of
+high eccentricity (comet Neujmin's period is 18 yr and eccentricity is
+0.78).  The 29P/Schwassmann-Wachmann (P = 15 yr, e = 0.04) particles
+remain at low errors after perihelion passage (near 15 yr).
+
+Next is the dust ejection test (@code{rd-jettest.png}).  The axes are
+velocity in the x and y directions with units of km/s.  In red is the
+isotropic dust production case.  The ejection velocity on the left
+hemisphere (the sun-ward direction) should have a magnitude of 1 km/s
+and the dust production should be isotropic (you should notice some
+limb brightening).  The anti-solar hemisphere has an ejection velocity
+of 0.25 km/s.  In green, the dust production rate is proportional to
+the cosine of the sun-zenith angle (i.e., local time) and the ejection
+velocity is 1.0 km/s.  In blue, both the dust production rate and the
+ejection velocity are proportional to the surface temperature of the
+nucleus as asphere in instantaneous equilibrium with insolation, i.e.,
+proportional to the cosine of the sun-zenith angle to the 1/4 power.
+The subsolar ejection velocity is 1.0 km/s.  Finally, shown in
+magenta, is a case where the production and velocity are proportional
+to the cosine of the sun-zenith angle, with a peak velocity of 1.0
+km/s at the subsolar point.  Except for the isotropic case, the
+nightside dust production is zero.
+
+The final plot (@code{rd-comptest.png}) shows the CometSuite's
+internal conversion from radius to beta for various compostions and
+fractal porosities.
+
+Once you quit GNU plot, ds9 is opened with a FITS image and a syndyne
+plot.  The FITS file is simply an image of the vertices of the
+syndynes.  In principle the FITS image and the syndynes file should
+line up, but in practice this doesn't seem to be the case.  This
+discrepancy needs to be investigated.
+
+@c -------------------------------------------------------------------
+@node IDL Tests
+@section IDL Tests
+@cindex IDL tests
+@cindex tests, IDL
+
+To test your IDL routines, get the heliocentric positions of the
+planets on 01 Jan 2006:
+@example
+IDL> get_planet_xyz,julday(01,01,2006,0d),511d,r
+IDL> print,r[*,2]
+      -26412200.   1.4471277e+08      -1905.9682
+@end example
+The vector r[*,2] is the x, y, z position of the Earth-Moon barycenter
+in kilometers.  If you want the position of the center of the Earth,
+use getxyz:
+@example
+IDL> getxyz,'earth',julday(1,1,2006,0d),r,v,kernel='planets.bsp'
+IDL> print,r
+      -26413866.   1.4471683e+08      -1532.8315
+@end example
+
+Once you have a comet ephemeris kernel you can get the position of a
+comet in the sky.  Here, we observe comet Encke from the Earth and
+Spitzer on 23 Jun 2004:
+@example
+IDL> comet_astrom,'encke',[2004,6,23]
+
+                           Comet: encke
+                            Date: 2004-06-23
+                   Time (UT hrs):  0.00000
+                      Julian day: 2453179.50000
+
+      Heliocentric distance (AU):    2.554
+        Geocentric distance (AU):    1.937
+   Spitzer-centric distance (AU):    1.999
+
+     Sun-Comet-Earth angle (deg):  +20.912
+   Sun-Comet-Spitzer angle (deg):  +21.699
+
+                   Earth RA, Dec: 22:37:15.8  -14:31:20.4
+                 Spitzer RA, Dec: 22:39:25.0  -13:39:39.6
+
+       Earth projected sun (deg):   70.717
+  Earth projected velocity (deg):   32.616
+     Spitzer projected sun (deg):   68.974
+Spitzer projected velocity (deg):   32.592
+
+@end example
+Now, correct the ephemeris for light travel time with the
+@code{/ltt} option:
+@example
+IDL> comet_astrom,'encke',[2004,6,23],/ltt
+CometSuite directory found: /home/msk/Projects/cometsuite/idl/../
+Kernel directory set to: /home/msk/Projects/cometsuite/idl/../kernels/
+
+                           Comet: encke
+                            Date: 2004-06-23
+                   Time (UT hrs):  0.00000
+                      Julian day: 2453179.50000
+
+      Heliocentric distance (AU):    2.554
+        Geocentric distance (AU):    1.937
+   Spitzer-centric distance (AU):    1.999
+
+     Sun-Comet-Earth angle (deg):  +20.915
+   Sun-Comet-Spitzer angle (deg):  +21.702
+
+                   Earth RA, Dec: 22:37:16.3  -14:31:17.8
+                 Spitzer RA, Dec: 22:39:25.3  -13:39:37.3
+                                  (light travel corrected) 
+
+       Earth projected sun (deg):   70.716
+  Earth projected velocity (deg):   32.609
+     Spitzer projected sun (deg):   68.973
+Spitzer projected velocity (deg):   32.585
+
+@end example
+
+@quotation Note
+Note that the RA and Dec are not exact.  In most cases they will be
+good to of order 10 arcseconds, but in cases like close approaches to
+the observer the RA and Dec may be much less accurate.
+@end quotation
+
+@c ======================================================================
+
+@node Python Tests
+@section Python Tests
+@cindex Python tests
+@cindex tests, Python
+
+The CometSuite and libgetxyz Python modules are part of mskpy, my
+personal Python package.
+
+@subsection Planet positions
+
+To test the Python modules, get the
+heliocentric positions of planets on 01 Jan 2006.  First, the
+Earth-Moon barycenter:
+@example
+>>> from mskpy import spice
+>>> spice.get_planet_xyz(511, '2006-01-01')[2]
+array([ -2.64122004e+07,   1.44712768e+08,  -1.90596823e+03])
+@end example
+Index 0 is Mercury, 1 is Venus, and so on.  The number 511 simply
+requests the positions of all the planet barycenters.  If you want the
+position of the center of the Earth, use getxyz:
+@example
+>>> spice.getxyz('earth', '2006-01-01', kernel='planets.bsp')[0]
+array([ -2.64138664e+07,   1.44716828e+08,  -1.53283149e+03])
+@end example
+Here, index 0 is the position vector (1 is the velocity vector).
+
+@subsection Comet observing geometry
+
+Once you have a comet ephemeris kernel you can get the position of a
+comet in the sky.  Here, we observe comet Encke from the Earth and
+Spitzer on 23 Jun 2004:
+@example
+>>> from mskpy import observing
+>>> observing.summarizegeom('encke', '2004-06-23')
+
+                           Object: encke
+                             Date: 2004-06-23
+                        Time (UT): 00:00
+                       Julian day: 2453179.500000
+      Light travel time corrected: False
+
+       Heliocentric distance (AU):    2.554
+         Geocentric distance (AU):    1.937
+    Spitzer-centric distance (AU):    1.999
+
+      Sun-Comet-Earth angle (deg):  +20.912
+    Sun-Comet-Spitzer angle (deg):  +21.699
+
+     Sun-Earth-Target angle (deg):  116.229
+    Moon-Earth-Target angle (deg):  173.363
+   Sun-Spitzer-Target angle (deg):  111.638
+
+                    Earth RA, Dec: 22:37:15.891 -14:31:20.437
+                  Spitzer RA, Dec: 22:39:25.023 -13:39:39.680
+
+        Earth projected sun (deg):   70.723
+   Earth projected velocity (deg):   32.630
+      Spitzer projected sun (deg):   68.955
+ Spitzer projected velocity (deg):   32.538
+@end example
+Now, correct the ephemeris for light travel time with the ltt=True
+option:
+@example
+>>> observing.summarizegeom('encke', '2004-06-23', ltt=True)
+
+                           Object: encke
+                             Date: 2004-06-23
+                        Time (UT): 00:00
+                       Julian day: 2453179.500000
+      Light travel time corrected: True
+
+       Heliocentric distance (AU):    2.554
+         Geocentric distance (AU):    1.937
+    Spitzer-centric distance (AU):    1.999
+
+      Sun-Comet-Earth angle (deg):  +20.915
+    Sun-Comet-Spitzer angle (deg):  +21.702
+
+     Sun-Earth-Target angle (deg):  116.217
+    Moon-Earth-Target angle (deg):  173.224
+   Sun-Spitzer-Target angle (deg):  111.626
+
+                    Earth RA, Dec: 22:37:16.314 -14:31:17.842
+                  Spitzer RA, Dec: 22:39:25.343 -13:39:37.393
+
+        Earth projected sun (deg):   70.705
+   Earth projected velocity (deg):   32.578
+      Spitzer projected sun (deg):   68.985
+ Spitzer projected velocity (deg):   32.670
+
+@end example
+
+@quotation Note
+Note that the RA and Dec are not exact.  In most cases they will be
+good to of order 10 arcseconds, but in cases like close approaches to
+the observer the RA and Dec may be much less accurate.
+@end quotation
+
+@subsection Syndyne reading and plotting
+
+Next we will test reading and plotting xyzfiles.  Read in and examine
+the comet Encke syndyne file generated during the CometSuite tests.
+Start Python in the CometSuite test directory, then enter:
+@example
+>>> from mskpy import cometsuite
+>>> from math import sqrt
+>>> syn = cometsuite.xyzread('syntest.xyz',
+>>>   datalist=('r', 'beta', 'age', 'v_ej'))
+>>> i = beta > 0
+>>> sqrt((r[i]**2).sum(1).mean()) / 1.49e8
+1.148218827237903
+>>> beta[i].mean()
+0.018714285714285732
+>>> age[i].max()
+200.0
+>>> vej[i].mean()
+0.0
+@end example
+The grains are an average of 1.15 AU from the Sun, the average
+beta-value is 0.019, the oldest grain is 200 days old, and the average
+ejection velocity is 0 km/s.  We only examine grains with beta-values
+greater than 0, because @code{rundynamics} saves the coordinates of
+the comet's orbit as beta = -99.
+
+Plot the syndynes and reproduce Fig. XXX of Reach et al. (2000):
+@example
+>>> from matplotlib import pyplot as mpl
+>>> cometsuite.synplot('syntest.xyz')
+>>> mpl.setp(mpl.gca(), xlim=[3600,-3600], ylim=[-3600,3600])
+>>> mpl.legend()
+@end example
+and you should see a nice syndyne figure (you may need to type
+mpl.show() for the window to display).
+
+@c -------------------------------------------------------------------
+@node Command-line Tools
+@chapter Command-line Tools
+@cindex command-line tools
+@cindex tools, command-line
+
+The following are descriptions of each of the CometSuite command-line
+tools.
+
+@quotation Note
+The command-line tools use standard GNU command-line conventions.
+Take care when typing command line parameters.  Keep in mind the
+following examples are equivalent:
+@itemize
+@item @code{xyz2fits -a -5.8 ...}
+@item @code{xyz2fits -a-5.8 ...}
+@item @code{xyz2fits -a "-5.8" ...}
+@item @code{xyz2fits -a "-5.8" ...}
+@end itemize
+or, if the parameter allows, use the long option,
+@itemize
+@item @code{xyz2fits --afrho=-5.8 ...}
+@item @code{xyz2fits --afrho -5.8 ...}
+@end itemize
+But the examples below are @strong{invalid} inputs,
+@itemize
+@item @code{xyz2fits -a=-5.8 ...}
+@item @code{xyz2fits --afrho-5.8 ...}
+@end itemize
+@end quotation
+
+@menu
+* rundynamics:: The Dynamical Modeler
+* xyzinfo:: Data File Information
+* syn2ds9:: Syndynes for DS9
+* xyz2fits:: FITS File Generation
+* xyz2psd:: Histogram Generation
+* integratexyz:: Integrate an xyzfile in Time
+@end menu
+
+@c -------------------------------------------------------------------
+@node rundynamics
+@section rundynamics - The Dynamical Modeler
+@cindex rundynamics
+@cindex dynamical modeler
+@cindex syndynes, generation
+@cindex Monte Carlo simulations, generation
+@cindex make comet
+
+The dynamical modeler is a C/C++ program designed to simulate comet
+dust dynamics.  Rundynamics can either generate dust syndynes, or
+Monte Carlo dust coma simulations.
+
+Get command-line help by running @code{rundyanamics --help}:
+@example
+CometSuite 0.9.1-dev
+Usage: rundynamics [OPTION]... parameterFilename.par
+
+Mandatory arguments to long options are mandatory for short options too.
+    -b, --beta=VAL          set the beta values to VAL
+    --box==VAL              set the integration box to VAL km or set
+                            VAL < 0 to disable (default: disabled)
+    --closeapproaches=BOOL  switch close approach handling on/off
+    -c, --comet=NAME        set the comet to NAME
+    -e                      print an example parameter file
+    --example               print a commented example parameter file
+    -h, --help              display this help
+    -j, --jd=DATE           set the Julian date to DATE
+    -k, --kernel=FILE       set the kernel to FILE
+    --ltt=BOOL              switch light travel time on/off
+    --ndays=VAL             set ndays to VAL
+    --nparticles=VAL        set nparticles to VAL
+    -o                      same as '--xyzfile'
+    --orbit=VAL             set orbit to VAL
+    --pfunc=FUNC            set the particle function (and parameters) to FUNC
+    --planets=VAL           set the planets to VAL
+    --planetlookup=BOOL     switch the planet look up table on/off
+    --program=NAME          set the program to NAME
+    -s, --steps=VAL         set steps to VAL
+    -t, --tol=VAL           set the tolerance to VAL
+    -x, --xyzfile=FILE      set the output file to FILE
+
+BOOL may be one of @{true, yes, on, 1, false, no, off, 0@}.
+Parameter values may be enclosed in quotes, e.g. --beta="1e-3 2e-3 4e-3" or
+  -b "0.1 0.01 0.001".
+Command line parameters override the parameter file.
+
+(c) 2005-2010 Michael S. Kelley
+@end example
+Most of the options override parameters defined in parameter files
+(@pxref{Rundynamics Parameter Files}).  The only new options are
+@samp{-e} (print an example parameter file), and @samp{-h} (show
+command-line help).
+
+@subsection Syndynes
+Zero-ejection velocity syndynes are one of the most basic dust
+dynamical simulations.  Run the following example to create syndynes
+for comet 2P/Encke at the time of the Reach et al. (2000, Icarus)
+observation with the Infrared Space Observatory (ISO) in July 1997:
+
+@example
+$ cat >encke-syndynes.par<<EOF
+PROGRAM: Syndynes
+COMET: encke
+KERNEL: encke.bsp
+JD: 2450643.54170
+XYZFILE: encke-syndynes.xyz
+TOL: 1e-2
+PLANETS: 511
+PLANETLOOKUP: off
+CLOSEAPPROACHES: on
+LTT: no
+BETA: 1e-3 2e-3 4e-3 6e-3 8e-3 1e-2 1e-1
+NDAYS: 200
+STEPS: 31
+ORBIT: 1
+EOF
+$ rundynamics encke-syndynes.par
+@end example
+For more information on parameter files, @xref{Rundynamics Parameter
+Files}.  When the simulation completes, run IDL and plot the data
+(@code{rd-syndynes.png}):
+@example
+synplot,'encke-syndynes.xyz',[60,-60],[-60,60],/arcmin,/color
+@end example
+
+@subsection Monte Carlo simulations
+Monte Carlo simulations have the potential to look like real comets,
+therefore I called this subprogram ``Make Comet''.  When particles are
+generated for a Monte Carlo simulation, they may be picked from
+randomly distributed variates, or from evenly spaced grids of values.
+There are 4 variates for each grain:
+@itemize
+@item grain age, or time since ejection from the nucleus, picked from
+a linear distribution,
+@item grain radius, picked from dn/dlog(a) proportional to 1,
+@item ejection velocity, picked from a linear distribution, one that
+is proportional to the cosine of the Sun-zenith angle, or one that is
+proportional to the 4th power of the cosine of the Sun-zenith angle,
+and
+@item surface location, picked from the same set of distributions as
+ejection velocity.
+@end itemize
+
+Generate a $10^5$ grain simulation of comet Encke's dust trail, up to
+3 orbits old:
+@example
+$ cat > encke-trail.par << EOF
+PROGRAM: make comet
+COMET: encke
+KERNEL: encke.bsp
+JD: 2450643.54170
+XYZFILE: encke-trail.xyz
+PFUNC: velocity iso 1.02; q_d iso; suncone 0 90; logradius 2 4; age 0 3600;
+TOL: 0.01
+PLANETS: 511
+PLANETLOOKUP: 1
+CLOSEAPPROACHES: 1
+BOX: -1
+LTT: 0
+SAVE: radius graindensity beta age origin r_i v_ej r_f
+NPARTICLES: 100000
+EOF
+$ rundynamics encke-trail.par
+@end example
+This example takes 12 minutes (7 ms/grain) to execute on my 3 GHz
+desktop.  The PFUNC parameter controls the grain properties in Make
+Comet (it can also be used to modify syndynes).  Here, we are
+generating grains with:
+@itemize
+@item isotropic ejection velocities proportional to 1.02 / sqrt(a * r_h) km/s
+(@code{velocity iso 1.02}), i.e., the ejection velocity does not
+depend on location on the nucleus,
+@item isotropic dust production rates from the sunlit hemisphere
+(@code{q_d iso; suncone 0 90}),
+@item radii ranging from 100 to 10,000 microns (@code{logradius 2 4}), and
+@item ages ranging from 0 to 3600 days.
+@end itemize
+For more information on parameter files and particle generation,
+@xref{Rundynamics Parameter Files}.
+
+Convert the xyzfile into an image, and over plot the syndynes
+generated above:
+@example
+xyz2fits -a-2 --psd=a^-3.5 -s720 -p10 -o encke-trail1.fits encke-trail.xyz
+syn2ds9 encke-syndynes.xyz -o encke-syndynes.reg
+ds9 -multiframe encke-trail1.fits -regions load all encke-syndynes.reg
+@end example
+Notice that the brightest grains fall along the tail direction, even
+though all our grains are larger than 100 microns. @xref{xyz2fits},
+for more discussion.
+
+@subsection Log files
+When @code{rundynamics} executes, it prints out the name of the log
+file, the parameters it will use in the simulation, and a progress
+report on the number of completed particles and the average number of
+seconds it spends generating and integrating each particle.  For the
+Monte Carlo trail simulation above:
+@example
+Run time output being sent to encke-trail.xyz.log
+
+# CometSuite 0.9.1-dev
+# Valid program names: syndynes, make comet, integratexyz
+PROGRAM: make comet
+# Parameters common to all programs.
+COMET: encke
+KERNEL: /home/msk/data/kernels/encke.bsp
+JD: 2450643.5417
+XYZFILE: encke-trail.xyz
+LABEL: 
+PFUNC: velocity iso 1.02; q_d iso; suncone 0 90; logradius 2 4; age 0 3600;
+TOL: 0.01
+PLANETS: 511
+PLANETLOOKUP: 1
+CLOSEAPPROACHES: 1
+BOX: -1
+LTT: 0
+SAVE:  radius graindensity beta age origin r_i v_ej r_f
+# Syndyne specific section.
+BETA: 0.001 0.002 0.004 0.006 0.008 0.01 0.1
+NDAYS: 200
+STEPS: 31
+ORBIT: 1
+# Make comet specific section.
+NPARTICLES: 100000
+
+Creating the planet lookup table...
+Particle 1000 completed (0.0068637 cpu seconds/particle)
+Particle 2000 completed (0.00673632 cpu seconds/particle)
+Particle 3000 completed (0.00648291 cpu seconds/particle)
+...
+@end example
+
+The log file provides an alternative method to monitoring the
+progress, as well as some additional diagnostic information.  The file
+lists the particle's number, radius, beta-value, age, the minimum
+integration step size (seconds), and the number of function calls
+during integration.  If the integration box is enabled,
+@xref{Rundynamics Parameter Files}, grains that fall outside the box
+will not be saved to the log.  This prevents the log file from growing
+very large when many grains are being rejected.
+
+@c -------------------------------------------------------------------
+@node xyzinfo
+@section xyzinfo
+Gives information on xyzfiles.  First, @code{xyzinfo} prints the
+parameters used to generate the simulation, then it attempts to read
+in all the particles.  Finally, it prints some simple statistics on
+the grains.  For example, run @code{xyzinfo} on the Monte Carlo
+simulation from above:
+@example
+$ xyzinfo encke-trail.xyz
+# CometSuite 0.9.1-dev
+# Sat Jul 31 10:51:55 2010
+# CometSuite 0.9.1-dev
+# Valid program names: syndynes, make comet, integratexyz
+PROGRAM: make comet
+# Parameters common to all programs.
+COMET: encke
+KERNEL: /home/msk/data/kernels/encke.bsp
+JD: 2450643.5417
+XYZFILE: encke-trail.xyz
+LABEL: 
+PFUNC: velocity iso 1.02; q_d iso; suncone 0 90; logradius 2 4; age 0 3600;
+TOL: 0.01
+PLANETS: 511
+PLANETLOOKUP: 1
+CLOSEAPPROACHES: 1
+BOX: -1
+LTT: 0
+SAVE:  radius graindensity beta age origin r_i v_ej r_f
+# Syndyne specific section.
+BETA: 0.001 0.002 0.004 0.006 0.008 0.01 0.1
+NDAYS: 200
+STEPS: 31
+ORBIT: 1
+# Make comet specific section.
+NPARTICLES: 100000
+# data file description
+UNITS:  micron g/cm^3 none s deg km km/s km
+DATA:  d(radius) d(graindensity) d(beta) d(age) d[2](origin) d[3](r_i) d[3](v_ej) d[3](r_f)
+
+Average log(beta): 0.000573175
+Average beta: 0.00123171
+Average radius (micron): 2142.12
+Average density (g/cm3): 1
+Average age (days): 1794.64
+Average rh (AU): 1.11119
+
+Successfully read 100000 out of 100000 particles
+
+@end example
+
+Monte Carlo simulations with BOX enabled do not save all the grains to
+the xyzfile, because a fraction of the grains left the integration
+box.  For these files, xyzinfo will not fail, but read until no more
+particles are available, then report the statistics:
+@example
+$ cat > encke-box.par << EOF
+PROGRAM: make comet
+COMET: encke
+KERNEL: encke.bsp
+JD: 2450643.54170
+XYZFILE: encke-box.xyz
+PFUNC: velocity iso 1.02; q_d iso; suncone 0 90; logradius 2 4; age 0 36;
+TOL: 0.01
+PLANETS: 511
+PLANETLOOKUP: 0
+CLOSEAPPROACHES: 1
+BOX: 10000
+LTT: 0
+SAVE: radius graindensity beta age origin r_i v_ej r_f
+NPARTICLES: 1000
+EOF
+$ rundynamics encke-box.par
+$ xyzinfo encke-box.xyz
+...
+
+Particle read error... exiting.
+
+Average log(beta): 0.000217001
+Average beta: 0.000413484
+Average radius (micron): 3841.51
+Average density (g/cm3): 1
+Average age (days): 3.31929
+Average rh (AU): 1.14962
+
+Successfully read 111 out of 1000 particles
+@end example
+For this particular simulation, only 11% of the grains remained within
+10,000 km from the comet.
+
+@c -------------------------------------------------------------------
+@node syn2ds9
+@section syn2ds9
+Converts syndynes to DS9 regions files:
+@example
+Usage: syn2ds9 [OPTION]... xyzfile1.xyz [xyzfile2.xyz...]
+
+Mandatory arguments to long options are mandatory for short options too.
+    -c, --color=BOOL        make each syndyne a differnt color (default: on)
+    -h, --help              display this help
+    -o FILENAME             output to file FILENAME (default: stdout)
+    --observer=STRING       the name of the observer, Earth (default) or
+                            Spitzer
+    --offset=VAL            Coordinate offsets of the comet position in
+                            arcseconds (i.e., this does not include the
+                            cos(Dec) correction)
+    -v, --verbose           output more info than necessary
+
+BOOL may be one of @{true, yes, on, 1, false, no, off, 0@}.
+
+(c) 2005-2008,2010 Michael S. Kelley
+@end example
+The @samp{--offset} option can be used to align the center of the
+syndynes on an object.  This is necessary when CometSuite doesn't
+compute the correct Right Ascension and Declination of the target
+E.g., the ephemeris may be incorrect, or the chosen observation date
+of the simulation may be off by a few minutes.  The offset values are
+arcseconds, i.e., to shift RA=135.0, Dec=-6.0, by 2'' to the
+north and east use @samp{--offset=2,2} and the syndynes will be
+shifted to 135.000556, -5.999444.
+
+@c -------------------------------------------------------------------
+@node xyz2fits
+@section xyz2fits
+
+Convert xyz files to FITS.  Each particle is projected onto an
+imaginary detector for the specified observer.  The value of each
+pixel in the FITS image is a weighted average of all the particles
+that fall along that pixel's line-of-sight.  The FITS files have 6
+extensions:
+@itemize
+@item surface brightness (MJy/sr or uncalibrated),
+@item number of particles (unweighted sum),
+@item mean beta (averaged in reciprocal space),
+@item mean radius in microns,
+@item mean age in days since ejection, and
+@item mean latitude in degrees (as of 0.9.1, the default pole is ecliptic north).
+@end itemize
+There are 5 weights that can be applied to the grains:
+@itemize
+@item dust production (Afrho) rate as a function of heliocentric
+distance,
+@item thermal emission as a function of wavelength, grain radius, and composition,
+@item scattered light as a function of wavelength, and grain radius,
+@item particle size distribution on the nucleus as a function of grain
+radius, and
+@item a scale factor applied on a file-by-file basis.
+@end itemize
+
+The radius weighting scheme inherent to Monte Carlo simulations is
+removed before applying the particle size distribution function.
+
+@quotation Note
+Because a dn/dlog(a) size distribution is assumed, if you convert a
+syndyne simulation to a FITS image, you must take into account that
+xyz2fits assumes the grains were picked from a dn/dlog(a) size
+distribution or else the final images will be incorrectly weighted.
+@end quotation
+
+All particle weighting schemes are specified on the command-line:
+@example
+CometSuite 0.9.1-dev Usage: xyz2fits [OPTION]... xyzfile1.xyz
+[xyzfile2.xyz...]
+
+Mandatory arguments to long options are mandatory for short options too.
+    -a, --afrho=VAL         weight the final image by dust production,
+                            afrho = r^afrhoSlope (default: -2)
+    --ageinvert             plot all particles except
+                            RANGE[0] < age < RANGE[1] (default: disabled)
+    --agerange=RANGE        only plot particles with ages inside RANGE:
+                            RANGE[0] <= age <= RANGE[1] (units: days,
+                            default: plot all)
+    --betainvert            plot all particles except
+                            RANGE[0] < beta < RANGE[1] (default: disabled)
+    --betarange=RANGE       only plot particles with beta values inside
+                            RANGE: betaLowerLimit <= beta <= betaUpperLimit
+                            (default: plot all)
+    -d, --density=VAL       use this grain density when transforming
+                            between beta and radius; ignored if radius or
+                            grain density is defined in the input file
+                            (units: g/cm^3, default: 1)
+    --ecliptic              output in ecliptic coordinates
+    --fscales=s1,s2,...     a list of values with which to scale each input
+                            file s1 corresponds to the first file; if there
+                            are more files than scales, the last scale will
+                            be repeated (default: 1)
+    -h, --help              display this help
+    --latinvert             plot all particles except
+                            RANGE[0] < lat < RANGE[1] (default: disabled)
+    --latrange=RANGE        only plot particles with latitude values inside
+                            RANGE: latLowerLimit <= beta <= latUpperLimit
+                            (default: plot all)
+    -m, --max=VAL           plot the first VAL particles (default: plot
+                            all)
+    --npole=VAL             direction of the north pole in ecliptic
+                            coordinates
+    -o FILENAME             output to file FILENAME (default: out.fits)
+    --observer=STRING       the location of the observer, Earth (default),
+                            Spitzer, or a position vector in units of AU
+    --offset=VAL            Coordinate offsets of the comet position in
+                            arcseconds, only affects the WCS header keywords
+                            (i.e., this does not include the cos(Dec)
+                            correction)
+    -p, --platescale=VAL    set the platescale to VAL, may be two values
+                            for x and y platescales, or one value, z, in
+                            which case the platescale will be -z z (units:
+                            arcsec/pix, default: -1 1)
+    --psd=STRING            set the nuclear particle size distribution
+                            function, current options are ism, a^x (where
+                            x is some value), hanner a0 M N, or none; all
+                            psds assume the simulation psd is dn/dlog(a) ~ 1;
+                            For reference, dn/dbeta = a^x = beta^(-x-2)
+                            (default: none)
+    --radinvert             plot all particles except
+                            RANGE[0] < radius < RANGE[1] (default: disabled)
+    --radrange=RANGE        only plot particles with radii inside
+                            RANGE: RANGE[0] <= radius <= RANGE[1]
+                            (default: plot all)
+    --rhlimit=VAL           remove grains produced at rh > rhlimit; set to
+                            -1 for no limit (default: -1)
+    --scattering=VAL        weight the final image by each particle's
+                            scattered light at wavelength VAL (units:
+                            microns, default: 0)
+    -s, --size=VAL          set the image size to VAL (units: pixels,
+                            default: 512 512)
+    --suninvert             plot all particles except
+                            RANGE[0] < z_sun < RANGE[1] where z_sun is the
+                            Sun-zenith angle (default: disabled)
+    --sunrange=RANGE        only plot particles with latitude values inside
+                            RANGE: RANGE[0] <= z_sun <= RANGE[1], where
+                            z_sun is the Sun-zenith angle (default: plot all)
+    -t, --thermal=VAL       weight the final image by each particle's thermal
+                            emission at wavelength VAL, set to zero for no
+                            thermal weighting (units: microns, default: 24)
+    -v, --verbose           output more info than necessary
+    --vlimit=VAL            limit the velocities to VAL*sqrt(beta/r_h)
+
+(c) 2005-2010 Michael S. Kelley
+@end example
+
+
+@c -------------------------------------------------------------------
+@node xyz2psd
+@section xyz2psd
+
+@subsection Description
+
+Creates histograms from xyz files, optionally weighting each particle.
+The particle weights are the same as those used by @code{xyz2fits},
+@xref{xyz2fits}.  Originally the program was envisioned to convert xyz
+files into observed particle size distributions (hence the name
+@code{xyz2psd}, but it has grown beyond that and can create particle
+age distributions, or beta-value distributions.
+
+@subsection 2D histograms
+
+Binning may be disabled (@samp{--binsize=-1}) so that the user can bin
+and re-bin with their own software.  With this option, we can create
+2D histograms of, e.g., size and age.  In Python:
+@example
+from os import system
+import numpy
+
+options = ' mctest.xyz --aper=-1 --binsize=-1 -a-4 --psd=a^-3.5 -t0'
+system('xyz2psd --bin=size -o size.dat' + options)
+system('xyz2psd --bin=age -o age.dat' + options)
+size, weights = numpy.loadtxt('size.dat', skiprows=4, usecols=[0, 1]).T
+age = numpy.loadtxt('age.dat', skiprows=4, usecols=[0])
+h = numpy.histogram2d(age, log10(size), bins=[5, 8], weights=weights)
+print(numpy.array2string(numpy.flipud(h[0]), precision=3, suppress_small=True))
+@end example
+For this example, we are examining the results of @samp{make mctest}
+in the @code{cometsuite/test/} directory.  The result will be
+something like:
+@example
+[[ 584.614   20.992    0.38     0.013    0.       0.       0.       0.   ]
+ [ 343.583   14.263    0.5      0.013    0.       0.       0.       0.   ]
+ [ 241.247    5.858    0.208    0.004    0.       0.       0.       0.   ]
+ [  54.052    1.846    0.04     0.001    0.       0.       0.       0.   ]
+ [  30.373    0.841    0.017    0.001    0.       0.       0.       0.   ]]
+@end example
+where the y-axis is grain age and the x-axis is grain size (note that
+we are using the @samp{flipud} function to print the histogram with
+axes increasing to the up and right).  We weighted the grains by
+a^-3.5 (@samp{--psd=a^-3.5}), thus there are more grains on the left
+(small radii).  We also weighted the grains by r_h^-4 (@samp{--a=4}).
+Since the mctest simulation is set to 312 days after comet 67P's
+perihelion, with a maximum age of 400, the peak histogram bin is at
+the top of the matrix (older grains).
+
+@subsection Commmand-line parameters
+The command-line parameters for @code{xyz2psd} are:
+@example
+CometSuite 0.9.1-dev
+Usage: xyz2psd [OPTION]... xyzfile1.xyz [xyzfile2.xyz...]
+
+Mandatory arguments to long options are mandatory for short options too.
+    -a, --afrho=VAL         weight the final size distribution by the dust
+                            production, afrho = r^afrhoSlope (default: -2)
+    --aper=VAL              set the diameter of an aperture to VAL size, set to
+                            -1 to include all particles, regardless of distance
+                            to the nucleus (units: arcsec, default: 3)
+    --ageinvert             use all particles except RANGE[0] < age < RANGE[1]
+                            (default: disabled)
+    --agerange=RANGE        only use particles with ages inside RANGE:
+                            RANGE[0] <= age <= RANGE[1] (units: days, default:
+                            use all)
+    --betainvert            use all particles except RANGE[0] < beta < RANGE[1]
+                            (default: disabled)
+    --betarange=RANGE       only use particles with beta values inside RANGE:
+                            betaLowerLimit <= beta <= betaUpperLimit (default:
+                            use all)
+    --bin=STRING            set to size (default), beta, or age to return each
+                            respective particle distribution
+    -b, --binsize=VAL       set the bin size to VAL, or -1 (default) for no
+                            binning; if the particle radius is not defined in
+                            the input file, then radius = 0.285 / beta is
+                            assumed (units: microns for size, unitless for
+                            beta, and days for age)
+    -d, --density=VAL       use this grain density when transforming between beta
+                            and radius; ignored if radius or grain density is
+                            defined in the input file (units: g/cm^3, default: 1)
+    --fscale=s1,s2,...      a list of values with which to scale each input file
+                            s1 corresponds to the first file; if there are more
+                            files than scales, the last scale will be repeated
+                            (default: 1)
+    -h, --help              display this help
+    --latinvert             plot all particles except RANGE[0] < lat < RANGE[1]
+                            (default: disabled)
+    --latrange=RANGE        only plot particles with latitude values inside RANGE:
+                            latLowerLimit <= beta <= latUpperLimit (default:
+                            plot all)
+    -m, --max=VAL           use the first VAL particles (default: use all)
+    --npole=VAL             direction of the north pole in ecliptic coordinates
+    -o FILENAME             output to file FILENAME (default: stdout)
+    --observer=STRING       the location of the observer, Earth (default),
+                            Spitzer, or a position vector in units of AU
+    --psd=STRING            set the nuclear particle size distribution
+                            function, current options are ism, a^x (where x
+                            is some value), hanner a0 M N, or none; all psds
+                            assume the simulation psd is dn/dlog(a) ~ 1
+                            (default: none)
+    --rhlimit=VAL           remove grains produced at rh > rhlimit; set to -1 for
+                            no limit (default: -1)
+    --scattering=VAL        weight the final PSD by each particle's scattered
+                            light at wavelength VAL (units: microns,default: 0)
+    -t, --thermal=VAL       weight the particle distributions by each the
+                            thermal emission at wavelength VAL, set to zero for
+                            no thermal weighting (units: microns, default: 0)
+    -v, --verbose           output more info than necessary
+
+(c) 2005-2010 Michael S. Kelley
+@end example
+
+
+@c -------------------------------------------------------------------
+@node integratexyz
+@section integratexyz
+
+@subsection Description
+Advances all particles in an xyzfile by a period of time.
+
+@subsection Rundynamics accuracy and precision
+
+With @code{integratexyz} we can check the accuracy and precision of
+the dynamical integrator.  First, create a simulation with a
+distribution of sizes and ejection velocities, but all of one age:
+@example
+cat>precistest1.par<<EOF
+PROGRAM: make comet
+COMET: encke
+KERNEL: encke.bsp
+JD: 2450643.5417
+XYZFILE: precistest1.xyz
+PFUNC: age 1000 1000; logradius -1 4; q_d iso; velocity iso 0.5;
+TOL: 0.01
+PLANETS: 511
+PLANETLOOKUP: 0
+CLOSEAPPROACHES: 1
+BOX: -1
+LTT: 0
+SAVE: radius graindensity beta age origin v_ej r_i v_i t_i r_f v_f t_f
+NPARTICLES: 10000
+EOF
+rundynamics precistest1.par
+@end example
+Important to this test is saving the beta-value and the entire final
+state of the grain (beta, r_f, v_f, and t_f).
+
+With the simulation created, integrate it backwards to the time of
+ejection with @code{integratexyz} by setting the parameter @samp{-t}
+to the negative of the grain ages:
+@example
+integratexyz -t-1000 -o precistest1back.xyz precistest1.xyz
+@end example
+
+All the grains should now have the same location as each other and the
+comet.  In Python:
+@example
+import numpy
+from mskpy.cometsuite import xyzread
+from mskpy.spice import getxyz
+r = xyzread('precistest1back.xyz')['r_f']
+rc = getxyz('encke', 2450643.5417 - 1000)[0]
+@end example
+
+The closer the standard deviations and peak-to-peak values of x, y,
+and z are to 0, the higher the precision of the simulation:
+@example
+print(r.std(0))
+[ 0.23992152  0.05618463  0.01413608]
+print(r.ptp(0))
+[ 7.29990828  1.33517385  0.39920903]
+@end example
+The precision of the above 1000 day simulation is typically below 1
+km, but as high as 8 km for some grains.
+
+The closer x, y, and z are to the comet, the more accurate the
+simulation:
+@example
+print((r - rc).mean(0))
+[ 0.09417963  0.00143622  0.00341786]
+print((r - rc).max(0))
+[ 5.92055261  0.2937783   0.32576614]
+@end example
+The accuracy is of the same order of magnitude, but on average much
+better than 1 km.  The above values are specific to this simulation
+(comet, grain age, ejection parameters).
+
+Now, check the precision using the planet look-up table:
+@example
+rundynamics precistest1.par --planetlookup=yes -o precistest2.xyz
+integratexyz -t-1000 -o precistest2back.xyz precistest2.xyz
+@end example
+
+@subsection Commmand-line parameters
+The command-line parameters for @code{xyz2psd} are:
+@example
+CometSuite 0.9.1-dev
+Usage: integratexyz [OPTION]... xyzfile1.xyz [xyzfile2.xyz...]
+Mandatory arguments to long options are mandatory for short options too.
+    -h, --help              display this help
+    -j, --jd=DATE           advance the xyzfile to DATE (overrides --time)
+    -o                      same as '--xyzfile'
+    -t, --time=VAL          advance the xyzfile by VAL additional days
+    -x, --xyzfile=FILE      set the output file to FILE
+
+BOOL may be one of @{true, yes, on, 1, false, no, off, 0@}.
+Parameter values may be enclosed in quotes, e.g. --beta="1e-3 2e-3 4e-3" or
+  -b "0.1 0.01 0.001".
+Command line parameters override the parameter file.
+
+(c) 2010 Michael S. Kelley
+@end example
+
+@c -------------------------------------------------------------------
+@node Rundynamics Parameter Files
+@chapter Rundynamics Parameter Files
+@cindex parameter files
+@cindex rundynamics, parameter files
+
+To provide a comprehensive description of the parameter file format
+and rundynamics parameter options.
+
+@quotation Note
+CometSuite doesn't do much error checking on the parameter files.
+Most importantly, there must be a space between the colon following a
+parameter and its right hand value, e.g., @code{COMET:encke} is
+incorrect, @code{COMET: encke} is correct.
+@end quotation
+
+@c -------------------------------------------------------------------
+@node IDL Tools
+@chapter IDL Tools
+
+To provide an introduction to the IDL tools.
+
+@c -------------------------------------------------------------------
+@node Python Tools
+@chapter Python Tools
+
+To provide an introduction to the Python tools.
+
+@c -------------------------------------------------------------------
+@node Cookbook
+@chapter Cookbook
+
+@menu
+* Mean age/size/etc. by distance::
+@end menu
+
+@c -------------------------------------------------------------------
+@node Mean age/size/etc. by distance
+@section Mean age/size/etc. by distance
+
+While simulation the Deep Impact ejecta, I set out to determine the
+mean size of grains as a function of distance from the comet.  This
+can be accomplished with xyz2fits and a histogram function.
+
+Generate a FITS image.  Since I am interested in mean size I don't
+want to weight grains by scattered light or thermal emission.  Also,
+the Deep Impact event occurred very quickly, therefore I can turn off
+the Afrho weighting.
+@example
+xyz2fits -a0 --psd="hanner 0.1 7.4 3.7" -t0 -p0.1 -s400 \
+  --observer=spitzer -o output.fits simulation.xyz
+@end example
+
+Now, read in the FITS image, remove the weights (extension 0) from the
+mean size image (extension 3), re-bin (ignoring pixels without any
+grains), and re-weight the bins.
+@example
+import numpy
+import pyfits
+w = pyfits.getdata('output.fits', 0)
+a = pyfits.getdata('output.fits', 3)
+y, x = numpy.indices(w.shape)
+# r is not exact within a few pixels of the nucleus
+r = numpy.sqrt(x**2 + y**2)
+i = w > 0
+hista = histogram(r[i], weights=a[i]*w[i])
+histw = histogram(r[i], weights=w[i])
+meana = hista[0] / histw[0]
+print hista[1]
+print meana
+@end example
+
+@c -------------------------------------------------------------------
+@node GNU Free Documentation License
+@appendix GNU Free Documentation License
+
+@include fdl.texi
+
+@c -------------------------------------------------------------------
+@c @node Index of Terms
+@c @unnumbered Index of Terms
+@c 
+@c @printindex cp
+
+@bye

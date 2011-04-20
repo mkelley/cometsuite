@@ -1,0 +1,13 @@
+set nologscale y
+set nologscale x
+set xlabel "v_x"
+set ylabel "v_y"
+set xrange [-1.0:1.0]
+set yrange [-1.0:1.0]
+set pointsize 0.1
+set size square
+plot "jettest-iso.dat" using 1:2 title "Isotropic" with p pt 6
+replot "jettest-iso-cos.dat" using 1:2 title "Isotropic-Cos" with p pt 6
+replot "jettest-temp-temp.dat" using 1:2 title "Temp-Temp" with p pt 6
+replot "jettest-cos-cos.dat" using 1:2 title "Cos-Cos" with p pt 6
+replot "jettest-iso-norm.dat" using 1:2 title "Isotropic Normal Dist." with p pt 6

@@ -1,0 +1,29 @@
+# this is a comment
+#
+# accutest1.par
+#
+# Integrates a beta=0 particle for 29P/Schwassmann-Wachmann 1 over 20
+# years (one period = 14 years).  This should match the ephemeris
+# position for 29P as there are no non-gravitational paramters in the
+# orbital elements.
+#
+PROGRAM: Syndynes
+# parameters common to all programs
+COMET: schwassmann-wachmann 1
+KERNEL: schwassmannwachmann1.bsp
+JD: 2453242.5
+XYZFILE: accutest1.xyz
+PFUNC:
+TOL: 1e-2
+PLANETS: 511
+PLANETLOOKUP: off
+CLOSEAPPROACHES: on
+LTT: no
+# syndyne specific section
+BETA: 0.0
+NDAYS: 7305.0
+STEPS: 21
+ORBIT: 0
+# mccomet specific section
+NPARTICLES: 300
+SAVE: beta radius graindensity age origin v_ej r_i v_i t_i r_f v_f t_f
