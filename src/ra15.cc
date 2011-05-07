@@ -59,7 +59,7 @@ void ra15::integrate() {
       int step = 0;
       double last_age = _particle.age();  // seconds
       double dAge = _particle.age() / 10;  // seconds
-      double rc[3], vc[3], jd;
+      double rc[3], vc[3];
       double nFCstep, nTSstep;
 
       nFC = nTS = 0;
