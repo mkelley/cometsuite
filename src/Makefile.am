@@ -1,7 +1,8 @@
 # We'll need to know the location of the installed FITS composition files
 AM_CPPFLAGS = -D_DATADIR='"$(pkgdatadir)"'
 
-bin_PROGRAMS = rundynamics integratexyz syn2ds9 xyz2fits xyz2psd xyzinfo
+bin_PROGRAMS = rundynamics integratelist integratexyz syn2ds9 xyz2fits	\
+	xyz2psd xyzinfo
 noinst_PROGRAMS = accutest jettest rbvtest vtest randtest
 
 accutest_SOURCES = Composition.h CoordTrans.h CoordTrans.cc		\
@@ -17,6 +18,16 @@ integratexyz_SOURCES = Composition.h CoordTrans.h CoordTrans.cc		\
 	GrainTemperature.h GrainTemperature.cc Integrator.h		\
 	Integrator.cc Physical.h Physical.cc Vector.h Vector.cc Vej.h	\
 	Vej.cc everhart.c getopt.h getopt.c getopt1.c integratexyz.cc	\
+	logFile.h logFile.cc longlat.h mskerr.h paramSet.h paramSet.cc	\
+	particle.h particle.cc pfunctions.h pfunctions.cc		\
+	planet_lookup.c ra15.h ra15.cc rundynamics.h state.h		\
+	StringConv.h StringConv.cc xyzstream.h xyzstream.cc
+
+integratelist_SOURCES = Composition.h CoordTrans.h CoordTrans.cc	\
+	Distribution.h Distribution.cc Dynamical.h Dynamical.cc		\
+	GrainTemperature.h GrainTemperature.cc Integrator.h		\
+	Integrator.cc Physical.h Physical.cc Vector.h Vector.cc Vej.h	\
+	Vej.cc everhart.c getopt.h getopt.c getopt1.c integratelist.cc	\
 	logFile.h logFile.cc longlat.h mskerr.h paramSet.h paramSet.cc	\
 	particle.h particle.cc pfunctions.h pfunctions.cc		\
 	planet_lookup.c ra15.h ra15.cc rundynamics.h state.h		\

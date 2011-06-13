@@ -516,6 +516,7 @@ But the examples below are @strong{invalid} inputs,
 * xyz2fits:: FITS File Generation
 * xyz2psd:: Histogram Generation
 * integratexyz:: Integrate an xyzfile in Time
+* integratelist:: Integrate a List of Grains From an xyzfile 
 @end menu
 
 @c -------------------------------------------------------------------
@@ -1156,7 +1157,7 @@ integratexyz -t-1000 -o precistest2back.xyz precistest2.xyz
 @end example
 
 @subsection Commmand-line parameters
-The command-line parameters for @code{xyz2psd} are:
+The command-line parameters for @code{integratexyz} are:
 @example
 CometSuite 0.9.1-dev
 Usage: integratexyz [OPTION]... xyzfile1.xyz [xyzfile2.xyz...]
@@ -1173,6 +1174,36 @@ Parameter values may be enclosed in quotes, e.g. --beta="1e-3 2e-3 4e-3" or
 Command line parameters override the parameter file.
 
 (c) 2010 Michael S. Kelley
+@end example
+
+@c -------------------------------------------------------------------
+@node integratelist
+@section integratelist
+
+@subsection Description
+Integrates the initial states of a list of grains forward in time.
+The initial states are read from an xyzfile.  With
+@code{integratelist} we can generate grains with other programs, or
+take an existing rundynamics result and re-run the simulation using
+different parameters (e.g., to see the effect of PLANETLOOKUP).
+
+@subsection Commmand-line parameters
+The command-line parameters for @code{xyz2psd} are:
+@example
+CometSuite 0.9.1-integratelist
+Usage: integratelist [OPTION]... xyzfile1.xyz [xyzfile2.xyz...]
+Mandatory arguments to long options are mandatory for short options too.
+    -h, --help              display this help
+    -j, --jd=DATE           advance the xyzfile to DATE (overrides file's JD)
+    -o                      same as '--xyzfile'
+    -x, --xyzfile=FILE      set the output file to FILE
+
+BOOL may be one of @{true, yes, on, 1, false, no, off, 0@}.
+Parameter values may be enclosed in quotes, e.g. --beta="1e-3 2e-3 4e-3" or
+  -b "0.1 0.01 0.001".
+Command line parameters override the parameter file.
+
+(c) 2011 Michael S. Kelley
 @end example
 
 @c -------------------------------------------------------------------

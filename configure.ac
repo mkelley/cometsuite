@@ -1,5 +1,5 @@
 AC_INIT([CometSuite],
-        [0.9.1],
+        [0.9.1-integratelist],
         [Michael S. Kelley <msk@astro.umd.edu>],
         [cometsuite])
 AC_CONFIG_AUX_DIR(config)
