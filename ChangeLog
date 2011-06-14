@@ -1,6 +1,8 @@
 2011-06-14  Michael S. Kelley <msk@astro.umd.edu>
 
-	* Added integratelist.
+	* integratelist.cc added.
+
+	* src/Makefile.am updated for integratelist.
 
 	* Version 0.9.2 released.
 
