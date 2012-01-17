@@ -2,7 +2,7 @@
 
   The integratelist main program.
 
-  Copyright (C) 2011 by Michael S. Kelley
+  Copyright (C) 2011,2012 by Michael S. Kelley
   <msk@astro.umd.edu>
 
  ***************************************************************************/
@@ -32,13 +32,13 @@
 
 using namespace std;
 
-bool parseCommandLine(int, char**, vector<string>&, string&, double&);
+int parseCommandLine(int, char**, vector<string>&, paramSet&, string&, double&);
 void usage();
 void timeAndStatus(long, clock_t&, string, bool, logFile&);
 
 int main(int argc, char *argv[])
 {
-  paramSet inParameters, outParameters;
+  paramSet temp, parameters, outParameters;
   particle p;
   state istate;
   clock_t start = clock();
@@ -50,8 +50,14 @@ int main(int argc, char *argv[])
   long n = 0;
   int status;
 
-  if (parseCommandLine(argc, argv, xyzfileNames, outfile, jd)) {
-    cerr << "Error parsing the command line.\n";
+  switch (parseCommandLine(argc, argv, xyzfileNames, parameters, outfile, jd)) {
+  case NOERROR:
+    break;
+  case HELP:
+    return EXIT_SUCCESS;
+  case BADINPUT:
+    cerr << "Error opening the first xyz file.\n";    
+  default:
     return EXIT_FAILURE;
   }
 
@@ -67,11 +73,11 @@ int main(int argc, char *argv[])
       cerr << "Error opening file: " << xyzfileNames[i] << "\n";
       return EXIT_FAILURE;
     }
-    inParameters = inxyz.readParameters();
-    if (inParameters.isSyndynes()) {
-      max += static_cast<long>(inParameters.beta().size() * inParameters.steps());
+    temp = inxyz.readParameters();
+    if (temp.isSyndynes()) {
+      max += static_cast<long>(temp.beta().size() * temp.steps());
     } else {
-      max += inParameters.nParticles();
+      max += temp.nParticles();
     }
     inxyz.close();
   }
@@ -89,13 +95,11 @@ int main(int argc, char *argv[])
       return EXIT_FAILURE;
     }
 
-    inParameters = inxyz.readParameters();
-
     if (i == 0) {
       // The output file is only initialized once.  This means that
       // the output parameters set in the first input file will be
       // used for all output
-      outParameters = inParameters;
+      outParameters = parameters;
       if (jd > 0) {
 	outParameters.obsDate(jd);
       } else {
@@ -121,13 +125,13 @@ int main(int argc, char *argv[])
     // occurs; update the cumulative sums after every grain
     // get number of particles for syndynes or make comet
 
-    if (inParameters.isSyndynes()) {
-      max = static_cast<long>(inParameters.beta().size() * inParameters.steps());
+    if (parameters.isSyndynes()) {
+      max = static_cast<long>(parameters.beta().size() * parameters.steps());
     } else {
-      max = inParameters.nParticles();
+      max = parameters.nParticles();
     }
 
-    dt_obs = (jd - inParameters.obsDate()) * 86400;
+    dt_obs = (jd - parameters.obsDate()) * 86400;
     if (DEBUG) cerr << "Adding " << dt_obs << " seconds to obsDate" << endl;
     for (n=0; n<max; n++) {
       inxyz.readParticle(p);
@@ -181,11 +185,12 @@ int main(int argc, char *argv[])
 
 /** Checks the command line for proper input and loads a parameter
     file if possible. */
-bool parseCommandLine(int argc, char** argv, vector<string>& xyzfileNames,
-		      string& outfile, double& jd) {
+int parseCommandLine(int argc, char** argv, vector<string>& xyzfileNames,
+		      paramSet& parameters, string& outfile, double& jd) {
   string keyword[1000], value[1000];
   int i = -1, example = 0;
   bool files = false, help = false;
+  xyzstream inxyz;
 
   if (argc > 1) {
     int c;
@@ -194,6 +199,8 @@ bool parseCommandLine(int argc, char** argv, vector<string>& xyzfileNames,
       {"help",            no_argument,       0, 'h'},
       {"jd",              required_argument, 0, 'j'},
       {"output",          required_argument, 0, 'o'},
+      {"planets",         required_argument, 0, 0  },
+      {"planetlookup",    required_argument, 0, 0  },
       {"xyzfile",         required_argument, 0, 'x'},
       {0, 0, 0, 0}
     };
@@ -212,6 +219,18 @@ bool parseCommandLine(int argc, char** argv, vector<string>& xyzfileNames,
 
       switch(c) {
       case 0:
+	if (longOptions[optionIndex].name == "planets") {
+	  keyword[++i] = "PLANETS";
+	  value[i] = optarg;
+	  break;
+	}
+
+	if (longOptions[optionIndex].name == "planetlookup") {
+	  keyword[++i] = "PLANETLOOKUP";
+	  value[i] = optarg;
+	  break;
+	}
+
 	break;
 
       case 'h':
@@ -243,13 +262,28 @@ bool parseCommandLine(int argc, char** argv, vector<string>& xyzfileNames,
 
     if (!files || help) {
       usage();
-      return false;
+      return HELP;
     }
 
-    return false;  // no errors
+    // Read in the first parameter set
+    inxyz.xyzopen(xyzfileNames[0], xyzstream::READ);
+    if (inxyz.fail()) return BADINPUT;
+    parameters = inxyz.readParameters();
+    inxyz.close();
+
+    // Set any parameters specified on the command line
+    for (int j=0; j<=i; j++) {
+      // nothing should start with a equals sign, this likely means
+      // a short parameter was entered '-s=100'
+      if (value[j][0] == '=') value[j][0] = ' ';
+      if (DEBUG) cerr << keyword[j] << " " << value[j] << "\n";
+      parameters.setParameter(keyword[j], value[j]);
+    }
+
+    return NOERROR;
   } else {
     usage();
-    return true;
+    return HELP;
   }
 }
 
