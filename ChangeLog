@@ -1,13 +1,3 @@
-2012-04-07  Michael S. Kelley <msk@astro.umd.edu>
-
-	* xyz2fits.cc updated for longitude ranges and nucleus rotation.
-
-	* xyzImage.cc updated short description.
-
-	* xyzProject.h updated for longitude ranges and nucleus rotation.
-
-	* xyzProject.cc updated for longitude ranges and nucleus rotation.
-
 2012-01-17  Michael S. Kelley <msk@astro.umd.edu>
 
 	* Development version: 0.9.3-dev

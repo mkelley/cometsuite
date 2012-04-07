@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  Copyright (C) 2005-2010,2012 by Michael S. Kelley <msk@astro.umd.edu>
+  Copyright (C) 2005-2010 by Michael S. Kelley <msk@astro.umd.edu>
 
  ***************************************************************************/
 
@@ -28,8 +28,8 @@
 using namespace std;
 
 enum xyzProjectFlags { newFile, lastParticle, noParticle, nParticlesExceeded,
-		       betaLimit, ageLimit, latLimit, lonLimit, radLimit,
-		       sunLimit, velocLimit, rhlimit, readError, error };
+		       betaLimit, ageLimit, latLimit, radLimit, sunLimit,
+		       velocLimit, rhlimit, readError, error };
 
 extern "C" int get_comet_xyz(const char *comet, const char *cometSPK, int npts,
                         double *jd, double *r, double *v);
@@ -66,10 +66,6 @@ class xyzProject {
   longlat offset();
   void offset(const valarray<float>);
   void offset(const longlat);
-  double rotPeriod();
-  void rotPeriod(const double);
-  double rotPhase();
-  void rotPhase(const double);
   longlat cometRaDec();
   void cometRaDec(const longlat);
   longlat originRaDec();
@@ -84,8 +80,6 @@ class xyzProject {
   void betaRange(const valarray<float>);
   valarray<float> latRange();
   void latRange(const valarray<float>);
-  valarray<float> lonRange();
-  void lonRange(const valarray<float>);
   valarray<float> radRange();
   void radRange(const valarray<float>);
   valarray<float> sunRange();
@@ -100,8 +94,6 @@ class xyzProject {
   void betaInvert(const bool);
   bool latInvert();
   void latInvert(const bool);
-  bool lonInvert();
-  void lonInvert(const bool);
   bool radInvert();
   void radInvert(const bool);
   bool sunInvert();
@@ -141,18 +133,13 @@ class xyzProject {
   // nucleus parameters
   float _npole[2];  // lambda, beta
   Vector nPole;     // unit vector
-  // unit vector where the Prime Meridian crosses the equator
-  Vector eqMeridian;
-  double _rotRate;  // deg/s
-  double _rotPhase;  // deg
 
   // particle inclusion/exclusion parameters
   long _max;
   /// \todo Change the ageRange, etc, vectors to double* (speed up?)
-  valarray<float> _ageRange, _betaRange, _latRange, _lonRange, _radRange,
-    _sunRange;
+  valarray<float> _ageRange, _betaRange, _latRange, _radRange, _sunRange;
   double _rhlimit;
-  bool _ageInvert, _betaInvert, _latInvert, _lonInvert, _radInvert, _sunInvert;
+  bool _ageInvert, _betaInvert, _latInvert, _radInvert, _sunInvert;
   Vej _vejGen;
 };
 

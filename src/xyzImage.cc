@@ -1,6 +1,7 @@
 /***************************************************************************
 
-  Histogram particles onto the sky and save to a FITS file.
+  Arranges grains on an image array and saves that array to a FITS
+  file.
 
   Copyright (C) 2005-2010 by Michael S. Kelley <msk@astro.umd.edu>
 
