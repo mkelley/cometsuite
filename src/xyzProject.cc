@@ -2,7 +2,7 @@
 
   Projects grains onto the Celestial Sphere.
 
-  Copyright (C) 2005-2010 by Michael S. Kelley <msk@astro.umd.edu>
+  Copyright (C) 2005-2010,2012 by Michael S. Kelley <msk@astro.umd.edu>
 
  ***************************************************************************/
 
@@ -41,12 +41,16 @@ xyzProject::xyzProject() {
   _ageInvert = false;
   _betaInvert = false;
   _latInvert = false;
+  _lonInvert = false;
   _radInvert = false;
   _sunInvert = false;
   _Coffset.lambda = 0;
   _Coffset.beta = 0;
   _npole[0] = 0.0;
   _npole[1] = 90.0;
+  _rotRate = 0.0;
+  _rotPhase = 0.0;
+
   _rhlimit = -1;
   _vejGen.v0(-1);
   _vejGen.simpleActivity();
@@ -131,6 +135,16 @@ string xyzProject::observerName() { return _observerName; }
 /** Set the observer's name. */
 void xyzProject::observerName(const string obs) { _observerName = obs; }
 
+/** Return the rotation period in hours. */
+double xyzProject::rotPeriod() { return 0.1 / _rotRate; }
+/** Set the rotation period in hours. */
+void xyzProject::rotPeriod(const double P) { _rotRate = 0.1 / P; }
+
+/** Return the rotation phase in degrees. */
+double xyzProject::rotPhase() { return _rotPhase; }
+/** Set the rotation phase in degrees. */
+void xyzProject::rotPhase(const double phi) { _rotPhase = phi; }
+
 /** Return the absolute positional offsets in units of degrees. */
 longlat xyzProject::offset() { return _Coffset; }
 /** Setup absolute positional offsets in units of degrees. */
@@ -208,6 +222,15 @@ void xyzProject::latRange(const valarray<float> lr) {
   _latRange = lr;
 }
 
+/** Return the longitude lower and upper limits. */
+valarray<float> xyzProject::lonRange() { return _lonRange; }
+/** Set the longitude lower and upper limits. */
+void xyzProject::lonRange(const valarray<float> lr) {
+  if (_lonRange.size() != 2)
+    _lonRange.resize(2);
+  _lonRange = lr;
+}
+
 /** Return the radius lower and upper limits. */
 valarray<float> xyzProject::radRange() { return _radRange; }
 /** Set the radius lower and upper limits. */
@@ -256,6 +279,11 @@ bool xyzProject::latInvert() { return _latInvert; }
 /** Set the status of the latitude limit logic. */
 void xyzProject::latInvert(const bool li) { _latInvert = li; }
 
+/** Return true if the longitude limit logic is inverted. */
+bool xyzProject::lonInvert() { return _lonInvert; }
+/** Set the status of the longitude limit logic. */
+void xyzProject::lonInvert(const bool li) { _lonInvert = li; }
+
 /** Return true if the radius limit logic is inverted. */
 bool xyzProject::radInvert() { return _radInvert; }
 /** Set the status of the radius limit logic. */
@@ -277,8 +305,9 @@ void xyzProject::nextParticle() {
     // load the first file on the first nextParticle call
     loadXyzfile();
 
-    // set up the north pole unit vector in rectangular ecliptic
-    // coordinates
+    // set up the north pole unit vector and the vector along which
+    // the equator crosses the Prime Meridian as defined by the Vernal
+    // Equinox. [rectangular ecliptic coordinates]
     if (_npole[0] > -999) {
       // convert to radians
       float nPoleLambda = _npole[0] * M_PI / 180.0;
@@ -287,6 +316,12 @@ void xyzProject::nextParticle() {
       nPole[1] = cos(nPoleBeta) * sin(nPoleLambda);
       nPole[2] = sin(nPoleBeta);
       nPole = nPole.unit();
+
+      // Project the Vernal Equinox onto the north pole, the rejection
+      // is where vector along which the equator crosses the Prime
+      // Meridian.
+      Vector X(1, 0, 0);
+      eqMeridian = (X - nPole * (X * nPole)).unit();
     }
 
     oneTimeSetup = true;
@@ -390,11 +425,30 @@ void xyzProject::nextParticle() {
     throw(readError);
   }
 
-  // (re)calculate this particle's ejected latitude from the nucleus
+  // (re)calculate this particle's ejected latitude and longitude from
+  // the nucleus
   if (_npole[0] >= -999) {
     longlat origin = _p.origin();
-    origin.beta = (_p.vej() * nPole) / _p.vej().length();
+    Vector proj, rej;  // projection, rejection
+    double a;
+    a = _p.vej() * nPole;
+    proj = nPole * a;
+    rej = _p.vej() - proj;
+
+    origin.beta = a / _p.vej().length();
     origin.beta = 90.0 - acos(origin.beta) * 180.0 / M_PI;
+
+    // project and reject the rejection
+    proj = eqMeridian * (rej * eqMeridian);
+    rej = rej - proj;
+    origin.lambda = atan2(rej.length(), proj.length()) * 180.0 / M_PI;
+    origin.lambda += _rotPhase - _rotRate * _p.age();
+
+    // Branch cut at 0 deg
+    while (origin.lambda < 0)
+      origin.lambda += 360;
+    origin.lambda = fmod(origin.lambda, 360.0);
+
     _p.origin(origin);
   }
 
@@ -421,10 +475,29 @@ void xyzProject::nextParticle() {
   // latitude limit
   if (_latRange.size()) {
     bool keep = false;
-    if ((_latRange[0] <= _p.origin().beta) && (_p.origin().beta <= _latRange[1]))
+    if ((_latRange[0] <= _p.origin().beta) &&
+	(_p.origin().beta <= _latRange[1]))
       keep = true;
     if (_latInvert) keep = !keep;
     if (!keep) throw(latLimit);
+  }
+
+  // longitude limit
+  if (_lonRange.size()) {
+    bool keep = false;
+    // Take care around longitude = 0.  This requires origin.lambda be
+    // between 0 and 360.
+    if ((_lonRange[0] <= _lonRange[1])) {
+      if ((_lonRange[0] <= _p.origin().lambda) &&
+	  (_p.origin().lambda <= _lonRange[1]))
+	keep = true;
+    } else {
+      if ((_lonRange[0] <= _p.origin().lambda) ||
+	  (_p.origin().lambda <= _lonRange[1]))
+	keep = true;
+    }
+    if (_lonInvert) keep = !keep;
+    if (!keep) throw(lonLimit);
   }
 
   // radius limit
