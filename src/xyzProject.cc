@@ -229,6 +229,13 @@ void xyzProject::lonRange(const valarray<float> lr) {
   if (_lonRange.size() != 2)
     _lonRange.resize(2);
   _lonRange = lr;
+
+  // Make sure they are between 0 and 360 deg
+  for (int i=0; i<2; i++) {
+    while (_lonRange[i] < 0)
+      _lonRange[i] += 360;
+    _lonRange[i] = fmod(_lonRange[i], 360.0);
+  }
 }
 
 /** Return the radius lower and upper limits. */

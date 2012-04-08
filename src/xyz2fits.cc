@@ -147,7 +147,7 @@ bool parseCommandLine(int argc, char** argv, runtimePar& runtime,
 	  break;
 	}
 	if (longOptions[optionIndex].name == "latrange") {
-	  image.lonRange(StringConv(optarg).toValarray<float>());
+	  image.latRange(StringConv(optarg).toValarray<float>());
 	  break;
 	}
 	if (longOptions[optionIndex].name == "loninvert") {
@@ -155,7 +155,7 @@ bool parseCommandLine(int argc, char** argv, runtimePar& runtime,
 	  break;
 	}
 	if (longOptions[optionIndex].name == "lonrange") {
-	  image.latRange(StringConv(optarg).toValarray<float>());
+	  image.lonRange(StringConv(optarg).toValarray<float>());
 	  break;
 	}
 	if (longOptions[optionIndex].name == "npole") {
@@ -406,8 +406,8 @@ void printParameters(xyzImage& image) {
   cout << "observer\t" << image.observerName() << "\n";
   cout << "WCS offset\t" << image.offset().lambda * 3600 << " " <<
     image.offset().beta * 3600 << "\n";
-  cout << "period\t" << image.rotPeriod() << "\n";
-  cout << "phase\t" << image.rotPhase() << "\n";
+  cout << "period\t\t" << image.rotPeriod() << "\n";
+  cout << "phase\t\t" << image.rotPhase() << "\n";
   cout << "platescale\t" << image.platescale()[0] << " " <<
     image.platescale()[1] << "\n";
   cout << "PSD\t\t" << image.nuclearPsd() << "\n";
