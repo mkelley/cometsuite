@@ -142,7 +142,7 @@ class xyzProject {
   float _npole[2];  // lambda, beta
   Vector nPole;     // unit vector
   // unit vector where the Prime Meridian crosses the equator
-  Vector eqMeridian;
+  Vector eq0, eq90;
   double _rotRate;  // deg/s
   double _rotPhase;  // deg
 

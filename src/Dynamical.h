@@ -1,5 +1,5 @@
 /***************************************************************************
-  Copyright (C) 2008 by Michael S. Kelley <msk@astro.umd.edu>
+  Copyright (C) 2008,2012 by Michael S. Kelley <msk@astro.umd.edu>
 
   ***************************************************************************/
 
@@ -41,6 +41,7 @@ class Dynamical : CoordTrans {
   Vector  poleV();
   void    poleV(const Vector);
   Vector  poleX();
+  Vector  poleY();
   longlat origin();
   void    origin(const longlat);
   Vector  vej();
@@ -56,7 +57,7 @@ class Dynamical : CoordTrans {
   double _rhlimit;
   longlat _pole, _origin;
   state _istate, _fstate;
-  Vector _vej, _poleV, _poleX;
+  Vector _vej, _poleV, _poleX, _poleY;
 };
 
 #endif

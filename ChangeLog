@@ -1,3 +1,16 @@
+2012-04-13  Michael S. Kelley <msk@astro.umd.edu>
+
+	* particle.cc updated to correctly compute longitude (previous
+	code was incomplete).
+
+	* Dynamical.cc updated poleX to be vector at longitude 0 on the
+	equator.  Longitude 0 is defined by the Vernal Equinox.  When the
+	pole is the VE, this poleX will be ecliptic north.  Now correctly
+	computes longitude.
+
+	* Dynamical.cc, Dynamical.h new vector (and method) poleY, which
+	is perpendicular to pole and poleX.
+
 2012-04-07  Michael S. Kelley <msk@astro.umd.edu>
 
 	* xyz2fits.cc updated for longitude ranges and nucleus rotation.

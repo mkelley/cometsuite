@@ -136,9 +136,21 @@ string xyzProject::observerName() { return _observerName; }
 void xyzProject::observerName(const string obs) { _observerName = obs; }
 
 /** Return the rotation period in hours. */
-double xyzProject::rotPeriod() { return 0.1 / _rotRate; }
+double xyzProject::rotPeriod() {
+  if (_rotRate == 0) {
+    return 0;
+  } else {
+    return 0.1 / _rotRate;
+  }
+}
 /** Set the rotation period in hours. */
-void xyzProject::rotPeriod(const double P) { _rotRate = 0.1 / P; }
+void xyzProject::rotPeriod(const double P) {
+  if (P == 0) {
+    _rotRate = 0;
+  } else {
+    _rotRate = 0.1 / P;
+  }
+}
 
 /** Return the rotation phase in degrees. */
 double xyzProject::rotPhase() { return _rotPhase; }
@@ -234,7 +246,7 @@ void xyzProject::lonRange(const valarray<float> lr) {
   for (int i=0; i<2; i++) {
     while (_lonRange[i] < 0)
       _lonRange[i] += 360;
-    _lonRange[i] = fmod(_lonRange[i], 360.0);
+    _lonRange[i] = fmod(_lonRange[i], (float)360.0);
   }
 }
 
@@ -307,6 +319,7 @@ void xyzProject::nextParticle() {
   static bool newFileSetup = false;
   static long nParticles;
   static long current = -1;
+  Vector vejhat;
 
   if (!oneTimeSetup) {
     // load the first file on the first nextParticle call
@@ -326,9 +339,14 @@ void xyzProject::nextParticle() {
 
       // Project the Vernal Equinox onto the north pole, the rejection
       // is where vector along which the equator crosses the Prime
-      // Meridian.
-      Vector X(1, 0, 0);
-      eqMeridian = (X - nPole * (X * nPole)).unit();
+      // Meridian.  If the pole is the VE, then use ecliptic north.
+      if ((_npole[0] + _npole[1]) == 0) {
+	eq0 = Vector(0, 0, 1);
+      } else {
+	Vector X(1, 0, 0);
+	eq0 = (X - nPole * (X * nPole)).unit();
+      }
+      eq90 = (nPole % eq0).unit();
     }
 
     oneTimeSetup = true;
@@ -379,12 +397,14 @@ void xyzProject::nextParticle() {
 
   // Progress report every 10000 particles
   if ((current % 10000) == 0) {
-    cout << "\r" << current << " completed, " << nParticles - current << " remain.          ";
+    cout << "\r" << current << " completed, " << nParticles - current <<
+      " remain.          ";
     cout.flush();
   }
 
   if (current >= nParticles) {
-    cout << "\r" << current << " completed, " << nParticles - current << " remain.          \n";
+    cout << "\r" << current << " completed, " << nParticles - current <<
+      " remain.          \n";
     cout.flush();
 
     // check for another file
@@ -432,24 +452,31 @@ void xyzProject::nextParticle() {
     throw(readError);
   }
 
+  // needed for longtiude and latitude tests
+  vejhat = _p.vej().unit();
+
   // (re)calculate this particle's ejected latitude and longitude from
   // the nucleus
   if (_npole[0] >= -999) {
     longlat origin = _p.origin();
-    Vector proj, rej;  // projection, rejection
-    double a;
-    a = _p.vej() * nPole;
-    proj = nPole * a;
-    rej = _p.vej() - proj;
+    double x, y, offset;
 
-    origin.beta = a / _p.vej().length();
+    // Project vej onto the pole
+    origin.beta = vejhat * nPole;
     origin.beta = 90.0 - acos(origin.beta) * 180.0 / M_PI;
 
-    // project and reject the rejection
-    proj = eqMeridian * (rej * eqMeridian);
-    rej = rej - proj;
-    origin.lambda = atan2(rej.length(), proj.length()) * 180.0 / M_PI;
-    origin.lambda += _rotPhase - _rotRate * _p.age();
+    // The rejection is on the equator
+    Vector rej = _p.vej() - nPole * (vejhat * nPole);
+    x = rej * eq0;
+    y = rej * eq90;
+
+    origin.lambda = atan2(y, x) * 180.0 / M_PI + 360;
+    origin.lambda = fmod(origin.lambda, 360); // branch cut at 0
+
+    // Rotate the nucleus
+    offset = fmod(_rotRate * _p.age(), 360.0) + _rotPhase;
+    origin.lambda -= offset;
+    //cerr << _p.origin().lambda << " " << _p.age() << " " << _rotRate << "\n";
 
     // Branch cut at 0 deg
     while (origin.lambda < 0)
@@ -492,8 +519,8 @@ void xyzProject::nextParticle() {
   // longitude limit
   if (_lonRange.size()) {
     bool keep = false;
-    // Take care around longitude = 0.  This requires origin.lambda be
-    // between 0 and 360.
+    // This test requires origin.lambda be between 0 and 360.  Take
+    // care around longitude = 0.
     if ((_lonRange[0] <= _lonRange[1])) {
       if ((_lonRange[0] <= _p.origin().lambda) &&
 	  (_p.origin().lambda <= _lonRange[1]))
@@ -503,6 +530,7 @@ void xyzProject::nextParticle() {
 	  (_p.origin().lambda <= _lonRange[1]))
 	keep = true;
     }
+    //cerr << _p.origin().lambda << " " << _p.age() << "\n";
     if (_lonInvert) keep = !keep;
     if (!keep) throw(lonLimit);
   }
@@ -519,7 +547,7 @@ void xyzProject::nextParticle() {
   // sun angle limit
   if (_sunRange.size()) {
     bool keep = false;
-    float z_sun = acos(_p.vej().unit() * (_p.istate().r.unit() * -1.0)) * 180.0 / M_PI;
+    float z_sun = acos(vejhat * (_p.istate().r.unit() * -1.0)) * 180.0 / M_PI;
     if ((_sunRange[0] <= z_sun) && (z_sun <= _sunRange[1])) keep = true;
     if (_latInvert) keep = !keep;
     if (!keep) throw(sunLimit);
