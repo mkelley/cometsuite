@@ -512,9 +512,8 @@ void xyzProject::nextParticle() {
     origin.lambda = fmod(origin.lambda, 360); // branch cut at 0
 
     // Rotate the nucleus
-    offset = fmod(_rotRate * _p.age(), 360.0) + _rotPhase;
-    origin.lambda -= offset;
-    //cerr << _p.origin().lambda << " " << _p.age() << " " << _rotRate << "\n";
+    origin.lambda += _rotPhase;
+    origin.lambda -= fmod(_rotRate * _p.age(), 360.0);
 
     // Branch cut at 0 deg
     while (origin.lambda < 0)
@@ -568,7 +567,7 @@ void xyzProject::nextParticle() {
 	  (_p.origin().lambda <= _lonRange[1]))
 	keep = true;
     }
-    //cerr << _p.origin().lambda << " " << _p.age() << "\n";
+
     if (_lonInvert) keep = !keep;
     if (!keep) throw(lonLimit);
   }
