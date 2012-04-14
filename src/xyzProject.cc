@@ -51,6 +51,11 @@ xyzProject::xyzProject() {
   _rotRate = 0.0;
   _rotPhase = 0.0;
 
+  _jet = false;
+  _jetAngle = 0.0;
+  _jetLoc[0] = 0.0;
+  _jetLoc[1] = 0.0;
+
   _rhlimit = -1;
   _vejGen.v0(-1);
   _vejGen.simpleActivity();
@@ -267,6 +272,39 @@ void xyzProject::sunRange(const valarray<float> sr) {
     _sunRange.resize(2);
   _sunRange = sr;
 }
+
+/** True if the jet is enabled. */
+bool xyzProject::jetOn() { return _jet; }
+/** Set the jet status. */
+void xyzProject::setJet(const bool j) { _jet = j; }
+
+/** Return the jet's location (ecliptic lambda, beta). */
+longlat xyzProject::jet() { return _jetLB; }
+/** Set the jet's location (ecliptic lambda, beta). */
+void xyzProject::jet(const valarray<float> jet) {
+  _jetLB.lambda = jet[0];
+  _jetLB.beta = jet[1];
+  _jetV = longlatToVector(_jetLB);
+}
+/** Set the jet's location (ecliptic lambda, beta). */
+void xyzProject::jet(longlat jet) {
+  _jetLB.lambda = jet.lambda;
+  _jetLB.beta = jet.beta;
+  _jetV = longlatToVector(_jetLB);
+}
+
+/** Return the jet location (ecliptic rectangular coods). */
+Vector xyzProject::jetV() { return _jet; }
+/** Set the jet status. */
+void xyzProject::jetV(const Vector j) {
+  _jetV = j;
+  _jetLB = getEcliptic(Vector(0, 0, 0), j);
+}
+
+/** Return the jet opening angle, full width (degrees). */
+float xyzProject::jetAngle() { return _jetAngle; }
+/** Set the jet status. */
+void xyzProject::jetAngle(const float a) { _jetAngle = a; }
 
 /** Return the simple activity ejection velocity parameter. */
 double xyzProject::vLimit() { return _vejGen.v0(); }

@@ -28,8 +28,9 @@
 using namespace std;
 
 enum xyzProjectFlags { newFile, lastParticle, noParticle, nParticlesExceeded,
-		       betaLimit, ageLimit, latLimit, lonLimit, radLimit,
-		       sunLimit, velocLimit, rhlimit, readError, error };
+		       ageLimit, betaLimit, jetLimit, latLimit, lonLimit,
+		       radLimit, sunLimit, velocLimit, rhlimit, readError,
+		       error };
 
 extern "C" int get_comet_xyz(const char *comet, const char *cometSPK, int npts,
                         double *jd, double *r, double *v);
@@ -78,6 +79,7 @@ class xyzProject {
   void originOffset(const longlat);
   long max();
   void max(const long);
+
   valarray<float> ageRange();
   void ageRange(const valarray<float>);
   valarray<float> betaRange();
@@ -90,10 +92,22 @@ class xyzProject {
   void radRange(const valarray<float>);
   valarray<float> sunRange();
   void sunRange(const valarray<float>);
+
+  bool jetOn();
+  void setJet(const bool);
+  valarray<float> jet();
+  void jet(const valarray<float>);
+  void jet(const longlat);
+  Vector jetV();
+  void jetV(const Vector);
+  float jetAngle();
+  void jetAngle(const float);
+  
   double vLimit();
   void vLimit(const double);
   double rhLimit();
   void rhLimit(const double);
+
   bool ageInvert();
   void ageInvert(const bool);
   bool betaInvert();
@@ -141,10 +155,16 @@ class xyzProject {
   // nucleus parameters
   float _npole[2];  // lambda, beta
   Vector nPole;     // unit vector
-  // unit vector where the Prime Meridian crosses the equator
+  // unit vector where the Prime Meridian crosses the equator, +90 deg
   Vector eq0, eq90;
   double _rotRate;  // deg/s
   double _rotPhase;  // deg
+
+  // jet parameters
+  bool _jet;
+  longlat _jetLB;
+  Vector _jetV;
+  float _jetAngle;
 
   // particle inclusion/exclusion parameters
   long _max;

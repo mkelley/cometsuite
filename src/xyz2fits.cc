@@ -81,8 +81,8 @@ bool parseCommandLine(int argc, char** argv, runtimePar& runtime,
       {"density",    required_argument, 0, 'd'},
       {"ecliptic",   no_argument,       0, 0  },
       {"fscales",    required_argument, 0, 0  },
-      {"porosity",   required_argument, 0, 0  },
       {"help",       no_argument,       0, 'h'},
+      {"jet",        required_argument, 0, 'j'},
       {"latinvert",  no_argument,       0, 0  },
       {"latrange",   required_argument, 0, 0  },
       {"loninvert",  no_argument,       0, 0  },
@@ -94,6 +94,7 @@ bool parseCommandLine(int argc, char** argv, runtimePar& runtime,
       {"period",     required_argument, 0, 0  },
       {"phase",      required_argument, 0, 0  },
       {"platescale", required_argument, 0, 'p'},
+      {"porosity",   required_argument, 0, 0  },
       {"psd",        required_argument, 0, 0  },
       {"radinvert",  no_argument,       0, 0  },
       {"radrange",   required_argument, 0, 0  },
@@ -112,7 +113,7 @@ bool parseCommandLine(int argc, char** argv, runtimePar& runtime,
       int optionIndex = 0;
       int this_option_optind = optind ? optind : 1;
 
-      c = getopt_long(argc, argv, "a:d:hm:o:p:s:t:v", longOptions,
+      c = getopt_long(argc, argv, "a:d:hj:m:o:p:s:t:v", longOptions,
 		      &optionIndex);
       if (c == -1) break;
 
@@ -221,6 +222,13 @@ bool parseCommandLine(int argc, char** argv, runtimePar& runtime,
       case 'a': image.afrhoSlope(atof(optarg)); break;
       case 'd': image.graindensity(atof(optarg)); break;
       case 'h': help = true; break;
+      case 'j':
+	{
+	  valarray<float> jet = StringConv(optarg).toValarray<float>();
+	  image.jet(true);
+	  image.jetLoc(jet[slice(0,2,1)]);
+	  image.jetAngle(jet[2]);
+	}
       case 'm': image.max(atol(optarg)); break;
       case 'o': image.outfileName(string(optarg)); break;
       case 'p': image.platescale(StringConv(optarg).toValarray<float>()); break;
