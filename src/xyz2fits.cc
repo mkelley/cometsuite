@@ -225,9 +225,14 @@ bool parseCommandLine(int argc, char** argv, runtimePar& runtime,
       case 'j':
 	{
 	  valarray<float> jet = StringConv(optarg).toValarray<float>();
-	  image.jet(true);
-	  image.jetLoc(jet[slice(0,2,1)]);
-	  image.jetAngle(jet[2]);
+	  if (jet.size() != 3) {
+	    cerr << "Need 3 parameters for --jet, but got " << jet.size()
+		 << ".\n";
+	    return true;
+	  }
+	  image.setJet(true);
+	  image.jet(jet[slice(0, 2, 1)]);
+	  image.jetHalfAngle(jet[2] / 2.0);
 	}
       case 'm': image.max(atol(optarg)); break;
       case 'o': image.outfileName(string(optarg)); break;

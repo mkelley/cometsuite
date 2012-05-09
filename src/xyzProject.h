@@ -18,6 +18,7 @@
 #include <valarray>
 #include "xyzstream.h"
 #include "Vej.h"
+#include "CoordTrans.h"
 #include "projection.h"
 #include "Vector.h"
 #include "rundynamics.h"
@@ -36,7 +37,7 @@ extern "C" int get_comet_xyz(const char *comet, const char *cometSPK, int npts,
                         double *jd, double *r, double *v);
 
 /** Handles the loading and sky projection of xyzfiles. */
-class xyzProject {
+class xyzProject : CoordTrans {
  public:
   xyzProject();
   ~xyzProject();
@@ -95,14 +96,14 @@ class xyzProject {
 
   bool jetOn();
   void setJet(const bool);
-  valarray<float> jet();
+  longlat jet();
   void jet(const valarray<float>);
   void jet(const longlat);
   Vector jetV();
   void jetV(const Vector);
-  float jetAngle();
-  void jetAngle(const float);
-  
+  float jetHalfAngle();
+  void jetHalfAngle(const float);
+
   double vLimit();
   void vLimit(const double);
   double rhLimit();
@@ -156,15 +157,15 @@ class xyzProject {
   float _npole[2];  // lambda, beta
   Vector nPole;     // unit vector
   // unit vector where the Prime Meridian crosses the equator, +90 deg
-  Vector eq0, eq90;
+  Vector eq0, eq90; // rectangular ecliptic coords
   double _rotRate;  // deg/s
-  double _rotPhase;  // deg
+  double _rotPhase; // deg
 
   // jet parameters
   bool _jet;
-  longlat _jetLB;
-  Vector _jetV;
-  float _jetAngle;
+  longlat _jetLB;       // lambda, beta
+  Vector _jetV;         // unit vector, rectangular ecliptic coords, km
+  float _jetHalfAngle;  // deg
 
   // particle inclusion/exclusion parameters
   long _max;

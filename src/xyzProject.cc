@@ -52,9 +52,10 @@ xyzProject::xyzProject() {
   _rotPhase = 0.0;
 
   _jet = false;
-  _jetAngle = 0.0;
-  _jetLoc[0] = 0.0;
-  _jetLoc[1] = 0.0;
+  _jetHalfAngle = 0.0;
+  _jetLB.lambda = 0;
+  _jetLB.beta = 0;
+  _jetV = Vector(0, 0, 0);
 
   _rhlimit = -1;
   _vejGen.v0(-1);
@@ -294,17 +295,17 @@ void xyzProject::jet(longlat jet) {
 }
 
 /** Return the jet location (ecliptic rectangular coods). */
-Vector xyzProject::jetV() { return _jet; }
+Vector xyzProject::jetV() { return _jetV; }
 /** Set the jet status. */
 void xyzProject::jetV(const Vector j) {
   _jetV = j;
   _jetLB = getEcliptic(Vector(0, 0, 0), j);
 }
 
-/** Return the jet opening angle, full width (degrees). */
-float xyzProject::jetAngle() { return _jetAngle; }
-/** Set the jet status. */
-void xyzProject::jetAngle(const float a) { _jetAngle = a; }
+/** Return the half width of the jet opening angle (degrees). */
+float xyzProject::jetHalfAngle() { return _jetHalfAngle; }
+/** Set the half width of the jet opening angle. */
+void xyzProject::jetHalfAngle(const float a) { _jetHalfAngle = a; }
 
 /** Return the simple activity ejection velocity parameter. */
 double xyzProject::vLimit() { return _vejGen.v0(); }
@@ -508,8 +509,8 @@ void xyzProject::nextParticle() {
     x = rej * eq0;
     y = rej * eq90;
 
-    origin.lambda = atan2(y, x) * 180.0 / M_PI + 360;
-    origin.lambda = fmod(origin.lambda, 360); // branch cut at 0
+    origin.lambda = atan2(y, x) * 180.0 / M_PI + 360.0;
+    origin.lambda = fmod(origin.lambda, 360.0); // branch cut at 0
 
     // Rotate the nucleus
     origin.lambda += _rotPhase;
@@ -570,6 +571,14 @@ void xyzProject::nextParticle() {
 
     if (_lonInvert) keep = !keep;
     if (!keep) throw(lonLimit);
+  }
+
+  // jet limit
+  if (_jet) {
+    bool keep = false;
+    float th = acos(_p.vej().unit() * _jetV) * 180.0 / M_PI;
+    if (th <= _jetHalfAngle) keep = true;
+    if (!keep) throw(jetLimit);
   }
 
   // radius limit
