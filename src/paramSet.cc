@@ -2,7 +2,7 @@
 
   Implements rundynamics parameter files.
 
-  Copyright (C) 2005-2010 by Michael S. Kelley <msk@astro.umd.edu>
+  Copyright (C) 2005-2010,2012 by Michael S. Kelley <msk@astro.umd.edu>
 
  ***************************************************************************/
 
@@ -428,9 +428,12 @@ void paramSet::writeParameters(ostream& os,
     os << pre << "# cometsuite/doc/rundynamics/classpfunctions.html for more information.\n";
     os << pre << "#\n";
     os << pre << "# Modules -\n";
-    os << pre << "#    RADIUS min max [steps [sequential]]\n";
-    os << pre << "#    LOGRADIUS log10(min) log10(max) [steps [sequential]]\n";
-    os << pre << "#    AGE min max [steps [sequential]]\n";
+    os << pre << "#    RADIUS a\n";
+    os << pre << "#    RADIUS min max [steps]\n";
+    os << pre << "#    LOGRADIUS log10(a)\n";
+    os << pre << "#    LOGRADIUS log10(min) log10(max) [steps]\n";
+    os << pre << "#    AGE t\n";
+    os << pre << "#    AGE min max [steps]\n";
     os << pre << "#    COMPOSITION name\n";
     os << pre << "#      Available materials (and their shorthand names):\n";
     os << pre << "#        geometric (g) - the default composition\n";

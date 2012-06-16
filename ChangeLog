@@ -1,3 +1,10 @@
+2012-06-16  Michael S. Kelley <msk@astro.umd.edu>
+
+	* pfunctions.cc radius, logradius, and age pfunctions now allow a
+	single value for all grains.
+
+	* paramSet.cc example pfunctions updated.
+
 2012-04-13  Michael S. Kelley <msk@astro.umd.edu>
 
 	* particle.cc updated to correctly compute longitude (previous
