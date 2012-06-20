@@ -13,6 +13,8 @@ XXXX (YYYY)
 * RADIUS, LOGRADIUS, and AGE now optinally accept a single value to
   use for all grains, e.g., "RADIUS 10.0".
 
+* syn2dy9 can output in ecliptic coordinates.
+
 0.9.2 (14 Jun 2011)
 
 * integratelist, a program to integrate an xyzfile from the initial
