@@ -2,6 +2,8 @@
 
 	* syn2ds9.cc Added --ecliptic.
 
+	* Version 0.9.3 released.
+
 2012-06-16  Michael S. Kelley <msk@astro.umd.edu>
 
 	* pfunctions.cc radius, logradius, and age pfunctions now allow a
