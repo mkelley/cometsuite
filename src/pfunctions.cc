@@ -2,7 +2,7 @@
 
   Implements the particle generation functions.
 
-  Copyright (C) 2005-2010 by Michael S. Kelley <msk@astro.umd.edu>
+  Copyright (C) 2005-2010,2012 by Michael S. Kelley <msk@astro.umd.edu>
 
  ***************************************************************************/
 
@@ -43,83 +43,87 @@ pfunctions::pfunctions() {
     order to create beta = 0 grains (corresponding to radius = inf),
     use radius = -999:
       - Modules
-        - RADIUS min max [steps]\n
+        - RADIUS value
+	  One radius for all grains.
+        - RADIUS min max [steps]
 	  The allowed range for grain radii.
-        - LOGRADIUS log(min) log(max) [steps]\n
-	  The allowed range for radii in terms of log10.
-        - AGE min max [steps]\n
+        - LOGRADIUS log(a)
+	  The log10 raidus to use for all grains.
+        - LOGRADIUS log(min) log(max) [steps]
+	  The allowed range for radii (log10).
+        - AGE min max [steps]
 	  The allowed range of ages.
-	- RADIUSLAW u1\n
+	- RADIUSLAW u1
 	  v_ej is proportional to radius^-u1 [default: 0.5].
-	- RHLAW u2\n
+	- RHLAW u2
 	  v_ej is proportional to rh^-u2 [default: 0.5].
-        - VELOCITY ("iso"|"cos"|"temp") v0\n
+        - VELOCITY ("iso"|"cos"|"temp") v0
 	  The ejection velocity (actually speed) is proportional to v0
 	  * radius^-u1 * rh^-u2, and is independent of the origin on
 	  the surface (iso), proprotional to the cosine of the
 	  sun-zenith angle (cos), or proportional to the surface
 	  temperature (STM/NEATM) of a spherical nucleus (temp).
-	- VELOCITY ("iso"|"cos"|"temp") "normal" v0 sigma [absolute]\n
+	- VELOCITY ("iso"|"cos"|"temp") "normal" v0 sigma [absolute]
 	  Same as above, but here v is picked from a normal
 	  distribution.  The default is centered on v' = v0 *
 	  radius^-u1 * rh^-u2, with a width of sigma * v' (i.e., sigma
 	  is specified as a fraction of v').  If the "absolute"
 	  parameter is specified, the distribution is centered on v0
 	  with a width of sigma * v0.  The velocity will be >= 0.
-        - VELOCITY ("iso"|"cos"|"temp") "limit" v0min v0max [steps]\n
+        - VELOCITY ("iso"|"cos"|"temp") "limit" v0min v0max [steps]
 	  Same as above, but here v0 is picked from a range of values.
-        - VELOCITY ("iso"|"cos"|"temp") "range" min max [steps]\n
+        - VELOCITY ("iso"|"cos"|"temp") "range" min max [steps]
 	  Same as above, but here the ejection velocity is picked from
 	  the absolute range min to max (independent of radius and rh).
-        - Q_D ("iso"|"cos"|"temp")\n
+        - Q_D ("iso"|"cos"|"temp")
 	  The dust production is constant per solid angle (iso),
 	  proportional to the cosine of the sun-zenith angle (cos), or
 	  proportional to the surface temperature (STM/NEATM) of a
 	  spherical nucleus (temp).
-        - SUNCONE min max\n
+        - SUNCONE min max
 	  The dust production is limited to a cone min to max degrees
 	  from the sub-solar point.
-        - RHLIMIT max\n
+        - RHLIMIT max
 	  The dust production is limited to heliocentric distances
 	  inside of max AU from the sun.
-	- POLE nPoleLambda nPoleBeta\n
+	- POLE nPoleLambda nPoleBeta
 	  Set the ecliptic longitude and latitude of the nucleus north
 	  pole.
 	- LATITUDE thetaMin thetaMax
 	  Set the ejection latitude to range from thetaMin to
 	  thetaMax.
-	- JET longitude latitude angle period\n
+	- JET longitude latitude angle period
 	  Eject grains in a jet.  Specify the planetocentric longitude
 	  and latitude (degrees) of the jet at t=0 (the time of
 	  observation), the opening angle, the rotation period of the
 	  jet (i.e., nucleus) in hours.
-        - COMPOSITION name\n
-        - BULKDENSITY rho\n
-        - FRACTALDIM D\n
+        - COMPOSITION name
+        - BULKDENSITY rho
+        - FRACTALDIM D
       - Templates
-        - BASIC_EJECTION_VELOCITY v0\n
+        - BASIC_EJECTION_VELOCITY v0
 	  Equivalent to "VELOCITY iso v0; SUNCONE 0 0".
-        - ONE_JET v0 [minAge] maxAge log(radiusMin) log(radiusMax) nPoleLambda nPoleBeta jetLat alpha period\n
+        - ONE_JET v0 [minAge] maxAge log(radiusMin) log(radiusMax) nPoleLambda nPoleBeta jetLat alpha period
 	  (not implemented)
-        - ONE_SIMPLE_JET v0 [minAge] maxAge log(radiusMin) log(radiusMax) nPoleLambda nPoleBeta jetLat alpha period\n
+        - ONE_SIMPLE_JET v0 [minAge] maxAge log(radiusMin) log(radiusMax) nPoleLambda nPoleBeta jetLat alpha period
 	  (not implemented)
-	- SIMPLE_COMA v0 [minAge] maxAge log(radiusMin) log(radiusMax)\n
+	- SIMPLE_COMA v0 [minAge] maxAge log(radiusMin) log(radiusMax)
 	  Equivalent to "VELOCITY iso v0; AGE minAge maxAge; LOGRADIUS
 	  log(radiusMin) log(radiusMax); Q_D iso; suncone 0 90".
-	- ISO_COMA v0 [minAge] maxAge log(radiusMin) log(radiusMax)\n
+	- ISO_COMA v0 [minAge] maxAge log(radiusMin) log(radiusMax)
 	  Equivalent to "VELOCITY iso v0; AGE minAge maxAge; LOGRADIS
           log(radiusMin) log(radiusMax); Q_D iso; SUNCONE 0 180".
-	- QV_COS_COMA v0 [minAge] maxAge log(radiusMin) log(radiusMax)\n
+	- QV_COS_COMA v0 [minAge] maxAge log(radiusMin) log(radiusMax)
 	  Equivalent to "VELOCITY cos v0; AGE minAge maxAge; LOGRADIUS
 	  log(radiusMin) log(radiusMax); Q_D temp; SUNCONE 0 90".
-	- QV_TEMP_COMA v0 [minAge] maxAge log(radiusMin) log(radiusMax)\n
+	- QV_TEMP_COMA v0 [minAge] maxAge log(radiusMin) log(radiusMax)
 	  Equivalent to "VELOCITY temp v0; AGE minAge maxAge; LOGRADIUS
 	  log(radiusMin) log(radiusMax); Q_D temp; SUNCONE 0 90".
-        - RTV log(radiusMin) log(radiusMax) minAge maxAge min_v0 max_v0\n
+        - RTV log(radiusMin) log(radiusMax) minAge maxAge min_v0 max_v0
 	  Equivalent to "LOGRADIUS log(radiusMin) log(radiusMax); AGE minAge
 	  maxAge; VELOCITY iso min_v0 max_v0; Q_D iso; Q_D iso;
 	  SUNCONE 0 180".
-        - RTV_GRID steps log(radiusMin) log(radiusMax) minAge maxAge min_v0 max_v0\n
+        - RTV_GRID steps log(radiusMin) log(radiusMax) minAge maxAge min_v0 max_v0
 	  Equivalent to "LOGRADIUS log(radiusMin) log(radiusMax) steps; AGE
 	  minAge maxAge steps; VELOCITY iso range min_v0 max_v0; Q_D
 	  iso; SUNCONE 0 180".
@@ -501,13 +505,18 @@ bool pfunctions::setup(paramSet parameters, particle& p) {
   return false;
 }
 
-/** RADIUS min max [steps].  dn/d[log(radius)] proportional to 1. */
+/** RADIUS min max [steps], with dn/d[log(radius)] proportional to 1,
+    or RADIUS value. */
 void pfunctions::radius(string list, particle &p) {
   vector<double> input = StringConv(list).toVector<double>();
 
-  // the mandatory parameters: min max
+  // the mandatory parameters: value OR (min AND max)
   p.radiusDist.min(input[0]);
-  p.radiusDist.max(input[1]);
+  if (input.size() == 1) {
+    p.radiusDist.max(input[0]);
+  } else {
+    p.radiusDist.max(input[1]);
+  }
 
   // the default distribution
   p.radiusDist.distribution(Distribution::LOG);
@@ -519,13 +528,18 @@ void pfunctions::radius(string list, particle &p) {
   }
 }
 
-/** LOGRADIUS min max [steps].  dn/d[log(radius)] proportional to 1. */
+/** LOGRADIUS min max [steps], with dn/d[log(radius)] proportional to
+    1, or LOGRADIUS val. */
 void pfunctions::logradius(string list, particle &p) {
   vector<double> input = StringConv(list).toVector<double>();
 
-  // the mandatory parameters: min max
+  // the mandatory parameters: value OR (min AND max)
   p.radiusDist.log10Min(input[0]);
-  p.radiusDist.log10Max(input[1]);
+  if (input.size() == 1) {
+    p.radiusDist.log10Max(input[0]);
+  } else {
+    p.radiusDist.log10Max(input[1]);
+  }
 
   // the default distribution
   p.radiusDist.distribution(Distribution::LOG);
@@ -537,13 +551,17 @@ void pfunctions::logradius(string list, particle &p) {
   }
 }
 
-/** AGE min max [steps].  dn/d[age] proportional to 1.  min, max in
-    days. */
+/** AGE min max [steps], where dn/d[age] proportional to 1, or AGE t.
+    Ages are in days. */
 void pfunctions::age(string list, particle &p) {
   vector<double> input = StringConv(list).toVector<double>();
-  // the mandatory parameters: min max
+  // the mandatory parameters: value OR (min AND max)
   p.ageDist.min(input[0] * 86400);
-  p.ageDist.max(input[1] * 86400);
+  if (input.size() == 1) {
+    p.ageDist.max(input[0] * 86400);
+  } else {
+    p.ageDist.max(input[1] * 86400);
+  }
 
   // the default distribution
   p.ageDist.distribution(Distribution::LINEAR);

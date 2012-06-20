@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  Copyright (C) 2005-2010 by Michael S. Kelley <msk@astro.umd.edu>
+  Copyright (C) 2005-2010,2012 by Michael S. Kelley <msk@astro.umd.edu>
 
  ***************************************************************************/
 
@@ -18,6 +18,7 @@
 #include <valarray>
 #include "xyzstream.h"
 #include "Vej.h"
+#include "CoordTrans.h"
 #include "projection.h"
 #include "Vector.h"
 #include "rundynamics.h"
@@ -28,14 +29,15 @@
 using namespace std;
 
 enum xyzProjectFlags { newFile, lastParticle, noParticle, nParticlesExceeded,
-		       betaLimit, ageLimit, latLimit, radLimit, sunLimit,
-		       velocLimit, rhlimit, readError, error };
+		       ageLimit, betaLimit, jetLimit, latLimit, lonLimit,
+		       radLimit, sunLimit, velocLimit, rhlimit, readError,
+		       error };
 
 extern "C" int get_comet_xyz(const char *comet, const char *cometSPK, int npts,
                         double *jd, double *r, double *v);
 
 /** Handles the loading and sky projection of xyzfiles. */
-class xyzProject {
+class xyzProject : CoordTrans {
  public:
   xyzProject();
   ~xyzProject();
@@ -66,6 +68,10 @@ class xyzProject {
   longlat offset();
   void offset(const valarray<float>);
   void offset(const longlat);
+  double rotPeriod();
+  void rotPeriod(const double);
+  double rotPhase();
+  void rotPhase(const double);
   longlat cometRaDec();
   void cometRaDec(const longlat);
   longlat originRaDec();
@@ -74,26 +80,43 @@ class xyzProject {
   void originOffset(const longlat);
   long max();
   void max(const long);
+
   valarray<float> ageRange();
   void ageRange(const valarray<float>);
   valarray<float> betaRange();
   void betaRange(const valarray<float>);
   valarray<float> latRange();
   void latRange(const valarray<float>);
+  valarray<float> lonRange();
+  void lonRange(const valarray<float>);
   valarray<float> radRange();
   void radRange(const valarray<float>);
   valarray<float> sunRange();
   void sunRange(const valarray<float>);
+
+  bool jetOn();
+  void setJet(const bool);
+  longlat jet();
+  void jet(const valarray<float>);
+  void jet(const longlat);
+  Vector jetV();
+  void jetV(const Vector);
+  float jetHalfAngle();
+  void jetHalfAngle(const float);
+
   double vLimit();
   void vLimit(const double);
   double rhLimit();
   void rhLimit(const double);
+
   bool ageInvert();
   void ageInvert(const bool);
   bool betaInvert();
   void betaInvert(const bool);
   bool latInvert();
   void latInvert(const bool);
+  bool lonInvert();
+  void lonInvert(const bool);
   bool radInvert();
   void radInvert(const bool);
   bool sunInvert();
@@ -133,13 +156,24 @@ class xyzProject {
   // nucleus parameters
   float _npole[2];  // lambda, beta
   Vector nPole;     // unit vector
+  // unit vector where the Prime Meridian crosses the equator, +90 deg
+  Vector eq0, eq90; // rectangular ecliptic coords
+  double _rotRate;  // deg/s
+  double _rotPhase; // deg
+
+  // jet parameters
+  bool _jet;
+  longlat _jetLB;       // lambda, beta
+  Vector _jetV;         // unit vector, rectangular ecliptic coords, km
+  float _jetHalfAngle;  // deg
 
   // particle inclusion/exclusion parameters
   long _max;
   /// \todo Change the ageRange, etc, vectors to double* (speed up?)
-  valarray<float> _ageRange, _betaRange, _latRange, _radRange, _sunRange;
+  valarray<float> _ageRange, _betaRange, _latRange, _lonRange, _radRange,
+    _sunRange;
   double _rhlimit;
-  bool _ageInvert, _betaInvert, _latInvert, _radInvert, _sunInvert;
+  bool _ageInvert, _betaInvert, _latInvert, _lonInvert, _radInvert, _sunInvert;
   Vej _vejGen;
 };
 

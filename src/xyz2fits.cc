@@ -2,7 +2,7 @@
 
   Converts xyzfiles to FITS files.
 
-  Copyright (C) 2005-2010 by Michael S. Kelley <msk@astro.umd.edu>
+  Copyright (C) 2005-2010,2012 by Michael S. Kelley <msk@astro.umd.edu>
 
  ***************************************************************************/
 
@@ -81,15 +81,20 @@ bool parseCommandLine(int argc, char** argv, runtimePar& runtime,
       {"density",    required_argument, 0, 'd'},
       {"ecliptic",   no_argument,       0, 0  },
       {"fscales",    required_argument, 0, 0  },
-      {"porosity",   required_argument, 0, 0  },
       {"help",       no_argument,       0, 'h'},
+      {"jet",        required_argument, 0, 'j'},
       {"latinvert",  no_argument,       0, 0  },
       {"latrange",   required_argument, 0, 0  },
+      {"loninvert",  no_argument,       0, 0  },
+      {"lonrange",   required_argument, 0, 0  },
       {"max",        required_argument, 0, 'm'},
       {"npole",      required_argument, 0, 0  },
       {"observer",   required_argument, 0, 0  },
       {"offset",     required_argument, 0, 0  },
+      {"period",     required_argument, 0, 0  },
+      {"phase",      required_argument, 0, 0  },
       {"platescale", required_argument, 0, 'p'},
+      {"porosity",   required_argument, 0, 0  },
       {"psd",        required_argument, 0, 0  },
       {"radinvert",  no_argument,       0, 0  },
       {"radrange",   required_argument, 0, 0  },
@@ -108,7 +113,7 @@ bool parseCommandLine(int argc, char** argv, runtimePar& runtime,
       int optionIndex = 0;
       int this_option_optind = optind ? optind : 1;
 
-      c = getopt_long(argc, argv, "a:d:hm:o:p:s:t:v", longOptions,
+      c = getopt_long(argc, argv, "a:d:hj:m:o:p:s:t:v", longOptions,
 		      &optionIndex);
       if (c == -1) break;
 
@@ -146,6 +151,14 @@ bool parseCommandLine(int argc, char** argv, runtimePar& runtime,
 	  image.latRange(StringConv(optarg).toValarray<float>());
 	  break;
 	}
+	if (longOptions[optionIndex].name == "loninvert") {
+	  image.lonInvert(true);
+	  break;
+	}
+	if (longOptions[optionIndex].name == "lonrange") {
+	  image.lonRange(StringConv(optarg).toValarray<float>());
+	  break;
+	}
 	if (longOptions[optionIndex].name == "npole") {
 	  image.npole(StringConv(optarg).toValarray<float>());
 	  break;
@@ -156,6 +169,14 @@ bool parseCommandLine(int argc, char** argv, runtimePar& runtime,
 	}
 	if (longOptions[optionIndex].name == "offset") {
 	  image.offset(StringConv(optarg).toValarray<float>() /= 3600);
+	  break;
+	}
+	if (longOptions[optionIndex].name == "period") {
+	  image.rotPeriod(atof(optarg));
+	  break;
+	}
+	if (longOptions[optionIndex].name == "phase") {
+	  image.rotPhase(atof(optarg));
 	  break;
 	}
 	if (longOptions[optionIndex].name == "psd") {
@@ -201,6 +222,18 @@ bool parseCommandLine(int argc, char** argv, runtimePar& runtime,
       case 'a': image.afrhoSlope(atof(optarg)); break;
       case 'd': image.graindensity(atof(optarg)); break;
       case 'h': help = true; break;
+      case 'j':
+	{
+	  valarray<float> jet = StringConv(optarg).toValarray<float>();
+	  if (jet.size() != 3) {
+	    cerr << "Need 3 parameters for --jet, but got " << jet.size()
+		 << ".\n";
+	    return true;
+	  }
+	  image.setJet(true);
+	  image.jet(jet[slice(0, 2, 1)]);
+	  image.jetHalfAngle(jet[2] / 2.0);
+	}
       case 'm': image.max(atol(optarg)); break;
       case 'o': image.outfileName(string(optarg)); break;
       case 'p': image.platescale(StringConv(optarg).toValarray<float>()); break;
@@ -276,7 +309,13 @@ Mandatory arguments to long options are mandatory for short options too.\n\
     --latinvert             plot all particles except\n\
                             RANGE[0] < lat < RANGE[1] (default: disabled)\n\
     --latrange=RANGE        only plot particles with latitude values inside\n\
-                            RANGE: latLowerLimit <= beta <= latUpperLimit\n\
+                            RANGE: latLowerLimit <= lat <= latUpperLimit\n\
+                            (default: plot all)\n\
+    --loninvert             plot all particles except\n\
+                            RANGE[0] < lon < RANGE[1] (default: disabled)\n\
+    --lonrange=RANGE        only plot particles with longitude values inside\n\
+                            RANGE: lonLowerLimit <= lon <= lonUpperLimit\n\
+                            where longitudes are defined from 0 to 360 deg\n\
                             (default: plot all)\n\
     -m, --max=VAL           plot the first VAL particles (default: plot\n\
                             all)\n\
@@ -289,6 +328,10 @@ Mandatory arguments to long options are mandatory for short options too.\n\
                             arcseconds, only affects the WCS header keywords\n\
                             (i.e., this does not include the cos(Dec)\n\
                             correction)\n\
+    --period=VAL            set the rotation period in hours (default: 0)\n\
+    --phase=VAL             set the rotation phase (at the time of \n\
+                            observation) in degrees, where phase = 0 is along\n\
+                            the Vernal Equinox. (default: 0)\n\
     -p, --platescale=VAL    set the platescale to VAL, may be two values\n\
                             for x and y platescales, or one value, z, in\n\
                             which case the platescale will be -z z (units:\n\
@@ -323,7 +366,7 @@ Mandatory arguments to long options are mandatory for short options too.\n\
     -v, --verbose           output more info than necessary\n\
     --vlimit=VAL            limit the velocities to VAL*sqrt(beta/r_h)\n\
 \n"
-       << "(c) 2005-2010 Michael S. Kelley\n";
+       << "(c) 2005-2010,2012 Michael S. Kelley\n";
   return;
 }
 
@@ -339,13 +382,15 @@ void printParameters(xyzImage& image) {
   }
   cout << "betaInvert\t" << image.betaInvert() << "\n";
   if (image.betaRange().size()) {
-    cout << "betaRange\t" << image.betaRange()[0] << " " << image.betaRange()[1] << "\n";
+    cout << "betaRange\t" << image.betaRange()[0] << " " <<
+      image.betaRange()[1] << "\n";
   } else {
     cout << "betaRange\t" << "none" << "\n";
   }
   cout << "radInvert\t" << image.radInvert() << "\n";
   if (image.radRange().size()) {
-    cout << "radRange\t" << image.radRange()[0] << " " << image.radRange()[1] << "\n";
+    cout << "radRange\t" << image.radRange()[0] << " " <<
+      image.radRange()[1] << "\n";
   } else {
     cout << "radRange\t" << "none" << "\n";
   }
@@ -357,15 +402,27 @@ void printParameters(xyzImage& image) {
   cout << "\n";
   cout << "latInvert\t" << image.latInvert() << "\n";
   if (image.latRange().size()) {
-    cout << "latRange\t" << image.latRange()[0] << " " << image.latRange()[1] << "\n";
+    cout << "latRange\t" << image.latRange()[0] << " " <<
+      image.latRange()[1] << "\n";
   } else {
     cout << "latRange\t" << "none" << "\n";
+  }
+  cout << "lonInvert\t" << image.lonInvert() << "\n";
+  if (image.lonRange().size()) {
+    cout << "lonRange\t" << image.lonRange()[0] << " " <<
+      image.lonRange()[1] << "\n";
+  } else {
+    cout << "lonRange\t" << "none" << "\n";
   }
   cout << "max\t\t" << image.max() << "\n";
   cout << "output file\t" << image.outfileName() << "\n";
   cout << "observer\t" << image.observerName() << "\n";
-  cout << "WCS offset\t" << image.offset().lambda * 3600 << " " << image.offset().beta * 3600 << "\n";
-  cout << "platescale\t" << image.platescale()[0] << " " << image.platescale()[1] << "\n";
+  cout << "WCS offset\t" << image.offset().lambda * 3600 << " " <<
+    image.offset().beta * 3600 << "\n";
+  cout << "period\t\t" << image.rotPeriod() << "\n";
+  cout << "phase\t\t" << image.rotPhase() << "\n";
+  cout << "platescale\t" << image.platescale()[0] << " " <<
+    image.platescale()[1] << "\n";
   cout << "PSD\t\t" << image.nuclearPsd() << "\n";
   cout << "image size\t" << image.size()[0] << " " << image.size()[1] << "\n";
   cout << "scatteringMode\t" << image.scatteringMode() << "\n";
@@ -375,7 +432,8 @@ void printParameters(xyzImage& image) {
   cout << "rhLimit\t\t" << image.rhLimit() << "\n";
   cout << "sunInvert\t" << image.sunInvert() << "\n";
   if (image.sunRange().size()) {
-    cout << "sunRange\t" << image.sunRange()[0] << " " << image.sunRange()[1] << "\n";
+    cout << "sunRange\t" << image.sunRange()[0] << " " <<
+      image.sunRange()[1] << "\n";
   } else {
     cout << "sunRange\t" << "none" << "\n";
   }
@@ -420,6 +478,8 @@ void writeParameters(xyzImage& image) {
   image.addFitsKeyword("OBSERVER", image.observerName(), "Observer name or coordinates (AU)");
   image.addFitsKeyword("OFFSET1", image.offset().lambda * 3600, "WCS axis 1 offset (arcsec)");
   image.addFitsKeyword("OFFSET2", image.offset().beta * 3600, "WCS axis 2 offset (arcsec)");
+  image.addFitsKeyword("PERIOD", image.rotPeriod(), "Nucleus rotation period (hr)");
+  image.addFitsKeyword("PHASE", image.rotPhase(), "Nucleus phase at time of observation (deg)");
   image.addFitsKeyword("PLTSCL1", image.platescale()[0], "Image axis 1 platescale (arcsec/pixel)");
   image.addFitsKeyword("PLTSCL2", image.platescale()[1], "Image axis 2 platescale (arcsec/pixel)");
   image.addFitsKeyword("PSD", image.nuclearPsd(), "Ejected particle size distribution");

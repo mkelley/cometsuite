@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  Creates DS9 regions out of rundynamics syndyne output.
+  Creates DS9 regions from rundynamics syndyne output.
 
-  Copyright (C) 2005-2008,2010 by Michael S. Kelley <msk@astro.umd.edu>
+  Copyright (C) 2005-2008,2010,2012 by Michael S. Kelley <msk@astro.umd.edu>
 
  ***************************************************************************/
 
@@ -31,8 +31,9 @@
 using namespace std;
 
 int parseCommandLine(int, char**, vector<string>& ,string&, string&,
-		      valarray<float>&, bool&, bool&);
-long writeRegions(xyzstream&, ofstream&, paramSet, long, string, valarray<float>, bool);
+		     valarray<float>&, bool&, bool&, bool&);
+long writeRegions(xyzstream&, ofstream&, paramSet, long, string,
+		  valarray<float>, bool, bool);
 void usage();
 
 /******************************************************************************/
@@ -41,9 +42,9 @@ int main(int argc, char *argv[])
   string outfile, observerName = "Earth";
   valarray<float> offset(0.0, 2);
   vector<string> infiles;
-  bool verbose = false, color = true;
+  bool verbose = false, color = true, ecliptic = false;
   switch (parseCommandLine(argc, argv, infiles, outfile, observerName,
-			   offset, verbose, color)) {
+			   offset, verbose, color, ecliptic)) {
   case NOERROR:
     break;
   case HELP:
@@ -88,7 +89,8 @@ int main(int argc, char *argv[])
     }
 
     expectedTotal += max;
-    n += writeRegions(xyzfile, of, parameters, max, observerName, offset, color);
+    n += writeRegions(xyzfile, of, parameters, max, observerName, offset,
+		      color, ecliptic);
 
     if (verbose) {
       cerr.precision(12);
@@ -111,7 +113,8 @@ int main(int argc, char *argv[])
     file if possible. */
 int parseCommandLine(int argc, char** argv, vector<string>& infiles,
 		     string& outfile, string& observerName,
-		     valarray<float>& offset, bool& verbose, bool& color) {
+		     valarray<float>& offset, bool& verbose, bool& color,
+		     bool& ecliptic) {
   bool files = false, help = false;
 
   // default output file is stdout
@@ -122,6 +125,7 @@ int parseCommandLine(int argc, char** argv, vector<string>& infiles,
     int digit_optind = 0;
     option longOptions[] = {
       {"color", 1, 0, 'c'},
+      {"ecliptic", 0, 0, 0},
       {"help", 0, 0, 'h'},
       {"observer", 1, 0, 0},
       {"offset", 1, 0, 0},
@@ -139,6 +143,10 @@ int parseCommandLine(int argc, char** argv, vector<string>& infiles,
 
       switch(c) {
       case 0:
+	if (longOptions[optionIndex].name == "ecliptic") {
+	  ecliptic = true;
+	  break;
+	}
 	if (longOptions[optionIndex].name == "observer") {
 	  observerName = optarg;
 	  break;
@@ -182,15 +190,19 @@ int parseCommandLine(int argc, char** argv, vector<string>& infiles,
 /** Converts the syndynes to a regions file. */
 long writeRegions(xyzstream& xyzfile, ofstream& of, paramSet parameters,
 		  long max, string observerName, valarray<float> offset,
-		  bool color) {
+		  bool color, bool ecliptic) {
   // some region header info and initial parameters
   of << "# Region file format: DS9 version 4.0\n";
   parameters.writeParameters(of, "# rundynamics ", false);
   of << "global color=green font=\"helvetica 10 normal\" select=1 highlite=1 edit=1 move=1 delete=1 include=1 fixed=0 source\n";
-  of << "fk5\n";
+  if (ecliptic) {
+    of << "ecliptic\n";
+  } else {
+    of << "fk5\n";
+  }
 
   // set up the observer and add in the offset
-  projection observer(observerName, parameters.obsDate(), false);
+  projection observer(observerName, parameters.obsDate(), ecliptic);
   observer.offset(offset);
 
   // set up the available colors

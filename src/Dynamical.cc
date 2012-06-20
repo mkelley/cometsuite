@@ -2,7 +2,7 @@
 
   Everything related to the description of a particle's dynamics.
 
-  Copyright (C) 2008,2010 by Michael S. Kelley <msk@astro.umd.edu>
+  Copyright (C) 2008,2010,2012 by Michael S. Kelley <msk@astro.umd.edu>
 
  ***************************************************************************/
 
@@ -57,13 +57,17 @@ longlat Dynamical::pole() { return _pole; }
 void Dynamical::pole(longlat ll) {
   _pole = ll;
   _poleV = longlatToVector(ll).unit();
+
+  // Define the vector at zero longitude on the equator
   if ((_poleV[1] == _poleV[2]) && (_poleV[2] == 0)) {
     // if the input vector is the x-axis, use the z-axis
     _poleX = Vector(0, 0, 1);
   } else {
-    // use the cross-product of the vector and the x-axis
-    _poleX = Vector(0, -_poleV[2], _poleV[1]).unit();
+    Vector X(1, 0, 0);
+    _poleX = (X - _poleV * (X * _poleV)).unit();
   }
+
+  _poleY = _poleV % _poleX;
 }
 
 /** Return the pole solution of the nucleus as a vector (ecliptic
@@ -73,19 +77,27 @@ Vector Dynamical::poleV() { return _poleV; }
     coordinates). */
 void Dynamical::poleV(Vector v) {
   _poleV = v.unit();
+
+  // Define the vector at zero longitude on the equator
   if ((_poleV[1] == _poleV[2]) && (_poleV[2] == 0)) {
     // if the input vector is the x-axis, use the z-axis
     _poleX = Vector(0, 0, 1);
   } else {
-    // use the cross-product of the vector and the x-axis
-    _poleX = Vector(0, -_poleV[2], _poleV[1]).unit();
+    Vector X(1, 0, 0);
+    _poleX = (X - _poleV * (X * _poleV)).unit();
   }
+
+  _poleY = _poleV % _poleX;
   _pole = getEcliptic(Vector(0, 0, 0), v);
 }
 
-/** Return a vector perpendicular to the nucleus (ecliptic
+/** Return the vector at zero longitude on the equator (ecliptic
     coordinates). */
 Vector Dynamical::poleX() { return _poleX; }
+
+/** Return the vector at 90 deg longitude on the equator (ecliptic
+    coordinates). */
+Vector Dynamical::poleY() { return _poleY; }
 
 /** Return the particle's origin on the nucleus. */
 longlat Dynamical::origin() { return _origin; }

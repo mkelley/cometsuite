@@ -2,7 +2,7 @@
 
   A class to contain the total description of a particle.
 
-  Copyright (C) 2004-2010 by Michael S. Kelley <msk@astro.umd.edu>
+  Copyright (C) 2004-2010,2012 by Michael S. Kelley <msk@astro.umd.edu>
 
  ***************************************************************************/
 
@@ -113,9 +113,20 @@ void particle::next(const long n) {
 
   // compute the origin on the nucleus
   if (vej().length() > 0) {
-    o.lambda = vej().unit() * poleX() * 180.0 / M_PI + 180.0;
+    double x, y;
+    Vector rej;
+
+    rej = vej() - poleV() * (vej().unit() * poleV());
+    x = rej * poleX();
+    y = rej * poleY();
+
+    // \todo Incorporate nucleus rotation into particle origin.
+    o.lambda = atan2(y, x) * 180.0 / M_PI + 360;
+    o.lambda = fmod(o.lambda, 360); // branch cut at 0
+
     o.beta = vej().unit() * poleV();
     o.beta = 90.0 - acos(o.beta) * 180.0 / M_PI;
+
     origin(o);
   }
 
