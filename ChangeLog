@@ -13,6 +13,8 @@
 	* pfunctions.cc Use DELTA distribution for single value inputs of
 	radius, logradius, and age.
 
+	* Version 0.9.4 released.
+
 2012-06-20  Michael S. Kelley <msk@astro.umd.edu>
 
 	* syn2ds9.cc Added --ecliptic.

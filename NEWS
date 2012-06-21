@@ -1,8 +1,8 @@
 
 Newsworthy notes for users of CometSuite.
-Copyright (C) 2010,2011,2012 Michael S. Kelley
+Copyright (C) 2010-2012 Michael S. Kelley
 
-0.9.3 (20 Jun 2012)
+0.9.4 (21 Jun 2012)
 
 * xyz2fits now has a preliminary implementation of nucleus rotation.
   It isn't exactly what I was going for, but it is working and seems
