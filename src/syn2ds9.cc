@@ -272,6 +272,6 @@ Mandatory arguments to long options are mandatory for short options too.\n\
 \n\
 BOOL may be one of {true, yes, on, 1, false, no, off, 0}.\n\
 \n\
-(c) 2005-2008,2010 Michael S. Kelley\n";
+(c) 2005-2008,2010,2012 Michael S. Kelley\n";
   return;
 }

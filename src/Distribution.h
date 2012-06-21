@@ -1,5 +1,5 @@
 /***************************************************************************
-  Copyright (C) 2008-2010 by Michael S. Kelley <msk@astro.umd.edu>
+  Copyright (C) 2008-2010,2012 by Michael S. Kelley <msk@astro.umd.edu>
 
   ***************************************************************************/
 
@@ -48,6 +48,7 @@ public:
   queue<double> getSequence();
 
   // methods to return random variates
+  double delta();
   double dn_dlogx__1();
   double dn_dlogx__1(const double, const double);
   double dn_dx__1();
@@ -74,7 +75,7 @@ public:
   // alternatively, we can set a default distribution and just call
   // next()
   enum distMethod { LOG, LINEAR, NORMAL, GRID, LOGGRID, SEQUENCE,
-		    ISOSPHERE, COSSPHERE, TEMPSPHERE };
+		    ISOSPHERE, COSSPHERE, TEMPSPHERE, DELTA };
   void distribution(const unsigned int);
   unsigned int distribution();
   double next();

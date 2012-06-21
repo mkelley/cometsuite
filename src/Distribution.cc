@@ -2,7 +2,7 @@
 
   Random variable generation.
 
-  Copyright (C) 2008-2010 by Michael S. Kelley <msk@astro.umd.edu>
+  Copyright (C) 2008-2010,2012 by Michael S. Kelley <msk@astro.umd.edu>
 
   \todo Need a random number generator that can pick numbers over a
   large dynamic range.  rand() returns an integer and the quantization
@@ -128,6 +128,9 @@ unsigned int Distribution::nGridSteps() { return _nGridSteps; }
 void Distribution::setSequence(queue<double> q) { _seq = q; }
 /** Returns the default sequence. */
 queue<double> Distribution::getSequence() { return _seq; }
+
+/** Return a single value. **/
+double Distribution::delta() { return _min; }
 
 /** Returns a random value from dn/dlog(value) ~ 1 between
     log(valueMin) and log(valueMax) using the default limits. */
@@ -320,6 +323,7 @@ unsigned int Distribution::distribution() {
 /** Generate a new random variate from the current distribution. */
 double Distribution::next() {
   switch (_distribution) {
+  case DELTA: { return delta(); }
   case LOG: { return dn_dlogx__1(); }
   case LINEAR: { return dn_dx__1(); }
   case NORMAL: { return dn_dx__normal(); }
