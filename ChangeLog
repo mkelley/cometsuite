@@ -1,3 +1,20 @@
+2012-06-21  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Development version: 0.9.4-dev
+
+	* xyzinfo.cc Made some cosmetic changes to particle averaging
+	while trying to track down a bug with radius pfunction (fixed
+	below).
+
+	* syn2ds9.cc Updated --help's copyrite date.
+
+	* Distribution.h, Distribution.cc Added DELTA distribution.
+
+	* pfunctions.cc Use DELTA distribution for single value inputs of
+	radius, logradius, and age.
+
+	* Version 0.9.4 released.
+
 2012-06-20  Michael S. Kelley <msk@astro.umd.edu>
 
 	* syn2ds9.cc Added --ecliptic.

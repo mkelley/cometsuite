@@ -2,7 +2,7 @@
 
   Provides basic information on a CometSuite data file.
 
-  Copyright (C) 2005-2010 by Michael S. Kelley <msk@astro.umd.edu>
+  Copyright (C) 2005-2010,2012 by Michael S. Kelley <msk@astro.umd.edu>
 
  ***************************************************************************/
 
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     }
   } else {
     cerr << PACKAGE_STRING << "\n";
-    cerr << SUBPROJECT << " Copyright (C) 2005-2010 Michael S Kelley\n";
+    cerr << SUBPROJECT << " Copyright (C) 2005-2010,2012 Michael S Kelley\n";
     cerr << "Usage:\n";
     cerr << "  " << argv[0] << " xyzfile.xyz\n\n";
     return EXIT_FAILURE;
@@ -101,12 +101,13 @@ int main(int argc, char *argv[])
   }
 
   // Convert cumulative sums to averages
-  lbeta_avg = exp(lbeta_avg / static_cast<double>(n) * log(10.0));
-  beta_avg /= static_cast<double>(n);
-  radius_avg /= static_cast<double>(n);
-  rho_avg /= static_cast<double>(n);
-  age_avg /= static_cast<double>(n);
-  rh_avg /= static_cast<double>(n);
+  double dn = static_cast<double>(n);
+  lbeta_avg = pow(10, lbeta_avg / dn);
+  beta_avg /= dn;
+  radius_avg /= dn;
+  rho_avg /= dn;
+  age_avg /= dn;
+  rh_avg /= dn;
 
   cout << "Average log(beta): " << lbeta_avg << endl;
   cout << "Average beta: " << beta_avg << endl;

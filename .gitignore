@@ -37,6 +37,7 @@ stamp-h1
 api/rundynamics/*
 api/Doxyfile
 build/*
+build-dev/*
 config/*
 autom4te.cache/*
 doc/userguide/*.log

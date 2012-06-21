@@ -509,17 +509,17 @@ bool pfunctions::setup(paramSet parameters, particle& p) {
     or RADIUS value. */
 void pfunctions::radius(string list, particle &p) {
   vector<double> input = StringConv(list).toVector<double>();
+  // the default distribution
+  p.radiusDist.distribution(Distribution::LOG);
 
   // the mandatory parameters: value OR (min AND max)
   p.radiusDist.min(input[0]);
   if (input.size() == 1) {
     p.radiusDist.max(input[0]);
+    p.radiusDist.distribution(Distribution::DELTA);
   } else {
     p.radiusDist.max(input[1]);
   }
-
-  // the default distribution
-  p.radiusDist.distribution(Distribution::LOG);
 
   if (input.size() == 3) {
     // we want gridded spacings
@@ -532,17 +532,17 @@ void pfunctions::radius(string list, particle &p) {
     1, or LOGRADIUS val. */
 void pfunctions::logradius(string list, particle &p) {
   vector<double> input = StringConv(list).toVector<double>();
+  // the default distribution
+  p.radiusDist.distribution(Distribution::LOG);
 
   // the mandatory parameters: value OR (min AND max)
   p.radiusDist.log10Min(input[0]);
   if (input.size() == 1) {
     p.radiusDist.log10Max(input[0]);
+    p.radiusDist.distribution(Distribution::DELTA);
   } else {
     p.radiusDist.log10Max(input[1]);
   }
-
-  // the default distribution
-  p.radiusDist.distribution(Distribution::LOG);
 
   if (input.size() == 3) {
     // we want gridded spacings
@@ -555,17 +555,18 @@ void pfunctions::logradius(string list, particle &p) {
     Ages are in days. */
 void pfunctions::age(string list, particle &p) {
   vector<double> input = StringConv(list).toVector<double>();
+  // the default distribution
+  p.ageDist.distribution(Distribution::LINEAR);
+	
   // the mandatory parameters: value OR (min AND max)
   p.ageDist.min(input[0] * 86400);
   if (input.size() == 1) {
     p.ageDist.max(input[0] * 86400);
+    p.ageDist.distribution(Distribution::DELTA);
   } else {
     p.ageDist.max(input[1] * 86400);
   }
 
-  // the default distribution
-  p.ageDist.distribution(Distribution::LINEAR);
-	
   if (input.size() == 3) {
     // we want gridded spacings
     p.ageDist.nGridSteps(static_cast<int>(input[2]));
@@ -778,15 +779,18 @@ void pfunctions::jet(string list, particle &p) {
     Physical.h.
 */
 void pfunctions::composition(string list, particle &p) {
-  if ((list.find("geometric") != string::npos) || (list.compare("g") == 0)) {
+  if ((list.find("geometric") != string::npos) ||
+      (list.compare("g") == 0)) {
     p.composition(GEOMETRIC);
     return;
   }
-  if ((list.find("amorphous carbon") != string::npos) || (list.compare("ac") == 0)) {
+  if ((list.find("amorphous carbon") != string::npos) ||
+      (list.compare("ac") == 0)) {
     p.composition(AM_CARBON);
     return;
   }
-  if ((list.find("amorphous olivine 50") != string::npos) || (list.compare("ol50") == 0)) {
+  if ((list.find("amorphous olivine 50") != string::npos) ||
+      (list.compare("ol50") == 0)) {
     p.composition(AM_OLIVINE50);
     return;
   }
