@@ -1,3 +1,9 @@
+2012-06-22  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Development version: 0.9.5-dev
+
+	* doc/Makefile.am corrected to find base.css via top_srcdir.
+
 2012-06-21  Michael S. Kelley <msk@astro.umd.edu>
 
 	* Development version: 0.9.4-dev
