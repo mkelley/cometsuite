@@ -1,3 +1,10 @@
+2012-06-29  Michael S. Kelley <msk@astro.umd.edu>
+
+	* rundynamics.cc Revamped help and option handling.
+
+	* src/Makefile.am Removed local getopt dependencies.  Getopt
+	should be provided via GNU libc.
+
 2012-06-22  Michael S. Kelley <msk@astro.umd.edu>
 
 	* Development version: 0.9.5-dev

@@ -2,7 +2,7 @@
 
   The rundynamics program.
 
-  Copyright (C) 2005,2006,2007,2008,2009 by Michael S. Kelley
+  Copyright (C) 2005,2006,2007,2008,2009,2012 by Michael S. Kelley
   <msk@astro.umd.edu>
 
  ***************************************************************************/
@@ -28,7 +28,7 @@
 using namespace std;
 
 int parseCommandLine(int, char**, paramSet&, string&);
-void usage();
+void usage(char *argv0);
 void timeAndStatus(long, clock_t&, string, bool, logFile&);
 
 /** \todo Parallelize?
@@ -109,25 +109,28 @@ int parseCommandLine(int argc, char** argv, paramSet& parameters,
     int c;
     int digit_optind = 0;
     option longOptions[] = {
-      {"beta",            required_argument, 0, 'b'},
-      {"box",             required_argument, 0, 0  },
-      {"closeapproaches", required_argument, 0, 0  },
-      {"comet",           required_argument, 0, 'c'},
-      {"example",         no_argument,       0, 0  },
-      {"help",            no_argument,       0, 'h'},
-      {"jd",              required_argument, 0, 'j'},
-      {"kernel",          required_argument, 0, 'k'},
-      {"ltt",             required_argument, 0, 0  },
-      {"ndays",           required_argument, 0, 0  },
-      {"nparticles",      required_argument, 0, 0  },
-      {"orbit",           required_argument, 0, 0  },
-      {"pfunc",           required_argument, 0, 0  },
-      {"planets",         required_argument, 0, 0  },
-      {"planetlookup",    required_argument, 0, 0  },
-      {"program",         required_argument, 0, 0  },
-      {"steps",           required_argument, 0, 's'},
-      {"tol",             required_argument, 0, 't'},
-      {"xyzfile",         required_argument, 0, 'x'},
+      {"beta",               required_argument, 0, 'b'},
+      {"box",                required_argument, 0, 0  },
+      {"closeapproaches",    optional_argument, 0, 0  },
+      {"no-closeapproaches", no_argument,       0, 0  },
+      {"comet",              required_argument, 0, 'c'},
+      {"example",            no_argument,       0, 0  },
+      {"help",               no_argument,       0, 'h'},
+      {"jd",                 required_argument, 0, 'j'},
+      {"kernel",             required_argument, 0, 'k'},
+      {"ltt",                optional_argument, 0, 0  },
+      {"no-ltt",             no_argument,       0, 0  },
+      {"ndays",              required_argument, 0, 0  },
+      {"nparticles",         required_argument, 0, 0  },
+      {"orbit",              required_argument, 0, 0  },
+      {"pfunc",              required_argument, 0, 0  },
+      {"planets",            required_argument, 0, 0  },
+      {"planetlookup",       optional_argument, 0, 0  },
+      {"no-planetlookup",    no_argument,       0, 0  },
+      {"program",            required_argument, 0, 0  },
+      {"steps",              required_argument, 0, 's'},
+      {"tol",                required_argument, 0, 't'},
+      {"xyzfile",            required_argument, 0, 'x'},
       {0, 0, 0, 0}
     };
 
@@ -147,7 +150,17 @@ int parseCommandLine(int argc, char** argv, paramSet& parameters,
       case 0:
 	if (longOptions[optionIndex].name == "closeapproaches") {
 	  keyword[++i] = "CLOSEAPPROACHES";
-	  value[i] = optarg;
+	  if (optarg == NULL) {
+	    value[i] = '1';
+	  } else {
+	    value[i] = optarg;
+	  }
+	  break;
+	}
+
+	if (longOptions[optionIndex].name == "no-closeapproaches") {
+	  keyword[++i] = "CLOSEAPPROACHES";
+	  value[i] = '0';
 	  break;
 	}
 
@@ -164,7 +177,17 @@ int parseCommandLine(int argc, char** argv, paramSet& parameters,
 
 	if (longOptions[optionIndex].name == "ltt") {
 	  keyword[++i] = "LTT";
-	  value[i] = optarg;
+	  if (optarg == NULL) {
+	    value[i] = '1';
+	  } else {
+	    value[i] = optarg;
+	  }
+	  break;
+	}
+
+	if (longOptions[optionIndex].name == "no-ltt") {
+	  keyword[++i] = "LTT";
+	  value[i] = '0';
 	  break;
 	}
 
@@ -200,7 +223,17 @@ int parseCommandLine(int argc, char** argv, paramSet& parameters,
 
 	if (longOptions[optionIndex].name == "planetlookup") {
 	  keyword[++i] = "PLANETLOOKUP";
-	  value[i] = optarg;
+	  if (optarg == NULL) {
+	    value[i] = '1';
+	  } else {
+	    value[i] = optarg;
+	  }
+	  break;
+	}
+
+	if (longOptions[optionIndex].name == "no-planetlookup") {
+	  keyword[++i] = "PLANETLOOKUP";
+	  value[i] = '0';
 	  break;
 	}
 
@@ -268,7 +301,7 @@ int parseCommandLine(int argc, char** argv, paramSet& parameters,
       infile = string(argv[optind]);
     }
 
-    if ((!file || help) && !example) usage();
+    if ((!file || help) && !example) usage(argv[0]);
 
     if (example) {
       if (example > 1)
@@ -295,7 +328,7 @@ int parseCommandLine(int argc, char** argv, paramSet& parameters,
 
     return NOERROR;  // no errors
   } else {
-    usage();
+    usage(argv[0]);
     return HELP;
   }
 }
@@ -325,38 +358,47 @@ void timeAndStatus(long n, clock_t& start, string status, bool last,
 }
 
 /** Prints the program usage and info. */
-void usage() {
+void usage(char* argv0) {
   cerr << PACKAGE_STRING << "\n";
-  cerr << "Usage: " << SUBPROJECT << " [OPTION]... parameterFilename.par\n\
+  cerr << "Usage: " << argv0 << " [OPTION]... parameter-file.par\n\
+Simulate dust dynamics in the Solar System.\n\
 \n\
 Mandatory arguments to long options are mandatory for short options too.\n\
-    -b, --beta=VAL          set the beta values to VAL\n\
-    --box==VAL              set the integration box to VAL km or set\n\
-                            VAL < 0 to disable (default: disabled)\n\
-    --closeapproaches=BOOL  switch close approach handling on/off\n\
-    -c, --comet=NAME        set the comet to NAME\n\
-    -e                      print an example parameter file\n\
-    --example               print a commented example parameter file\n\
-    -h, --help              display this help\n\
-    -j, --jd=DATE           set the Julian date to DATE\n\
-    -k, --kernel=FILE       set the kernel to FILE\n\
-    --ltt=BOOL              switch light travel time on/off\n\
-    --ndays=VAL             set ndays to VAL\n\
-    --nparticles=VAL        set nparticles to VAL\n\
-    -o                      same as \'--xyzfile\'\n\
-    --orbit=VAL             set orbit to VAL\n\
-    --pfunc=FUNC            set the particle function (and parameters) to FUNC\n\
-    --planets=VAL           set the planets to VAL\n\
-    --planetlookup=BOOL     switch the planet look up table on/off\n\
-    --program=NAME          set the program to NAME\n\
-    -s, --steps=VAL         set steps to VAL\n\
-    -t, --tol=VAL           set the tolerance to VAL\n\
-    -x, --xyzfile=FILE      set the output file to FILE\n\
+Global options:\n\
+      --box=SIZE                set the integration box to SIZE km or set\n\
+                                SIZE < 0 to disable (default: disabled)\n\
+      --closeapproaches[=BOOL]  enable/disable planet close approach handling\n\
+      --no-closeapproaches      disable close approach handling\n\
+  -c, --comet=NAME              set the comet to NAME\n\
+  -e                            print an example parameter file\n\
+      --example                 print a commented example parameter file\n\
+  -h, --help                    display this help\n\
+  -j, --jd=DATE                 set the Julian date to DATE\n\
+  -k, --kernel=FILE             set the kernel to FILE\n\
+      --ltt[=BOOL]              enable/disable light travel time correction\n\
+      --no-ltt                  disable light travel time correction\n\
+  -o                            same as \'--xyzfile\'\n\
+      --pfunc=STRING            set the particle function string to STRING\n\
+      --planets=N               set the planet bit mask to N\n\
+      --planetlookup[=BOOL]     enable/disable the planet look up table\n\
+      --no-planetlookup         disable the planet look up table\n\
+      --program=NAME            set the program to NAME (e.g., syndynes)\n\
+  -t, --tol=LIMIT               set the RA15 integration tolerance to LIMIT\n\
+  -x, --xyzfile=FILE            set the output file to FILE\n\
+\n\
+Syndyne specific options:\n\
+  -b, --beta=LIST               set the syndyne beta values to LIST\n\
+      --ndays=DAYS              set the syndyne length to DAYS\n\
+      --orbit=DAYS              set the syndyne orbit length to DAYS\n\
+  -s, --steps=N                 set number of syndyne time steps to N\n\
+\n\
+Make Comet specific options:\n\
+      --nparticles=N            set the number of Make Comet particles to N\n\
 \n\
 BOOL may be one of {true, yes, on, 1, false, no, off, 0}.\n\
 Parameter values may be enclosed in quotes, e.g. --beta=\"1e-3 2e-3 4e-3\" or\n\
   -b \"0.1 0.01 0.001\".\n\
 Command line parameters override the parameter file.\n\
 \n\
-(c) 2005-2010 Michael S. Kelley\n";
+(c) 2005-2010,2012 Michael S. Kelley\n";
 }
