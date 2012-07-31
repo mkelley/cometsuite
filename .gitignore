@@ -49,6 +49,10 @@ doc/version.texi
 m4/*
 src/.deps
 test-results/*
+test/*.dat
+test/*.psd
+test/*.fits
+test/*.reg
 
 api/Doxyfile
 src/.deps/
