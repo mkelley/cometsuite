@@ -233,7 +233,7 @@ bool parseCommandLine(int argc, char** argv, runtimePar& runtime,
 	  image.setJet(true);
 	  image.jet(jet[slice(0, 2, 1)]);
 	  image.jetHalfAngle(jet[2] / 2.0);
-	  image.rotPeriod(jet[3]);
+	  break;
 	}
       case 'm': image.max(atol(optarg)); break;
       case 'o': image.outfileName(string(optarg)); break;
@@ -354,8 +354,8 @@ Mandatory arguments to long options are mandatory for short options too.\n\
     --betarange=RANGE       only plot particles with beta values inside\n\
                             RANGE: betaLowerLimit <= beta <= betaUpperLimit\n\
                             (default: plot all)\n\
-    --jet=lon,lat,th,per    specify jet location (longitude, latitude),\n\
-                            opening angle, and period. (units: deg, hr)\n\
+    --jet=lon,lat,th        specify jet location (longitude, latitude), and\n\
+                            opening angle. (units: deg)\n\
     --latinvert             plot all particles except\n\
                             RANGE[0] < lat < RANGE[1] (default: disabled)\n\
     --latrange=RANGE        only plot particles with latitude values inside\n\

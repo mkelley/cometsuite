@@ -1,5 +1,5 @@
 /***************************************************************************
-  Copyright (C) 2004,2005,2007,2008 by Michael S. Kelley
+  Copyright (C) 2004,2005,2007,2008,2012 by Michael S. Kelley
   <msk@astro.umd.edu>
 
  ***************************************************************************/
@@ -12,6 +12,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include <iostream>
+#include "longlat.h"
 
 using namespace std;
 
@@ -38,6 +39,7 @@ class Vector {
 
   // methods
   double length();
+  longlat angles();
   Vector unit();
   double *dblarr();
   double cosangle(Vector);

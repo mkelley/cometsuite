@@ -2,8 +2,7 @@
 
   A 3-element vector representing rectangular coordinates.
 
-  Copyright (C) 2004,2005,2006,2007,2008 by Michael S. Kelley
-  <msk@astro.umd.edu>
+  Copyright (C) 2004-2008,2012 by Michael S. Kelley <msk@astro.umd.edu>
 
  ***************************************************************************/
 
@@ -14,6 +13,7 @@
 #include <ostream>
 #include <cmath>
 #include "Vector.h"
+#include "longlat.h"
 
 using namespace std;
 
@@ -111,6 +111,15 @@ ostream& operator<<(ostream& os, Vector b) {
 
 /** Returns the length of the vector. */
 double Vector::length() { return sqrt(a[0]*a[0] + a[1]*a[1] + a[2]*a[2]); }
+
+/** Returns the angular component of the vector, e.g., lambda, beta
+    (deg). */
+longlat Vector::angles() {
+  longlat lb;
+  lb.lambda = atan2(a[1], a[0]) * 180.0 / M_PI;
+  lb.beta = atan2(a[2], sqrt(a[0]*a[0] + a[1]*a[1])) * 180.0 / M_PI;
+  return lb;
+}
 
 /** Returns the vector's unit vector. */
 Vector Vector::unit() {

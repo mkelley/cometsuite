@@ -68,10 +68,14 @@ class xyzProject : CoordTrans {
   longlat offset();
   void offset(const valarray<float>);
   void offset(const longlat);
+
   double rotPeriod();
   void rotPeriod(const double);
+  double rotFreq();
+  void rotFreq(const double);
   double rotPhase();
   void rotPhase(const double);
+
   longlat cometRaDec();
   void cometRaDec(const longlat);
   longlat originRaDec();
@@ -96,11 +100,11 @@ class xyzProject : CoordTrans {
 
   bool jetOn();
   void setJet(const bool);
-  longlat jet();
   void jet(const valarray<float>);
   void jet(const longlat);
-  Vector jetV();
-  void jetV(const Vector);
+  longlat jetLL();
+  Vector jetV(const double);
+  longlat jetLB(const double);
   float jetHalfAngle();
   void jetHalfAngle(const float);
 
@@ -158,13 +162,14 @@ class xyzProject : CoordTrans {
   Vector nPole;     // unit vector
   // unit vector where the Prime Meridian crosses the equator, +90 deg
   Vector eq0, eq90; // rectangular ecliptic coords
-  double _rotRate;  // deg/s
+  double _rotFreq;  // deg/s
   double _rotPhase; // deg
 
   // jet parameters
   bool _jet;
-  longlat _jetLB;       // lambda, beta
-  Vector _jetV;         // unit vector, rectangular ecliptic coords, km
+  longlat _jetLL;       // lon, lat
+  Vector _jetV0;        // jet unit vector at t=0, rectangular ecliptic coords
+                        // km
   float _jetHalfAngle;  // deg
 
   // particle inclusion/exclusion parameters
