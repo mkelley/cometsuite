@@ -3,7 +3,7 @@ AM_CPPFLAGS = -D_DATADIR='"$(pkgdatadir)"'
 
 bin_PROGRAMS = rundynamics integratelist integratexyz syn2ds9 xyz2fits	\
 	xyz2psd xyzinfo
-noinst_PROGRAMS = accutest jettest rbvtest vtest randtest
+noinst_PROGRAMS = accutest vejtest rbvtest vtest randtest
 
 accutest_SOURCES = Composition.h CoordTrans.h CoordTrans.cc		\
 	Distribution.h Distribution.cc Dynamical.h Dynamical.cc		\
@@ -33,10 +33,10 @@ integratelist_SOURCES = Composition.h CoordTrans.h CoordTrans.cc	\
 	planet_lookup.c ra15.h ra15.cc rundynamics.h state.h		\
 	StringConv.h StringConv.cc xyzstream.h xyzstream.cc
 
-jettest_SOURCES = Composition.h CoordTrans.h CoordTrans.cc		\
+vejtest_SOURCES = Composition.h CoordTrans.h CoordTrans.cc		\
 	Distribution.h Distribution.cc Dynamical.h Dynamical.cc		\
 	GrainTemperature.h GrainTemperature.cc Physical.h Physical.cc	\
-	Vector.h Vector.cc Vej.h Vej.cc longlat.h jettest.cc		\
+	Vector.h Vector.cc Vej.h Vej.cc longlat.h vejtest.cc		\
 	paramSet.h paramSet.cc particle.h particle.cc pfunctions.h	\
 	pfunctions.cc rundynamics.h state.h StringConv.h StringConv.cc
 

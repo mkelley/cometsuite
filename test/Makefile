@@ -2,8 +2,8 @@
 src=../src
 mc-extra=--nparticles=200 --planetlookup=no
 
-test: syntest mctest accutest jettest imagetest comptest thermtest plots
-test-noplot: syntest mctest accutest jettest imagetest comptest thermtest
+test: syntest mctest accutest vejtest imagetest comptest thermtest plots
+test-noplot: syntest mctest accutest vejtest imagetest comptest thermtest
 test-mc: accutest-mc plots
 
 syntest:
@@ -24,8 +24,8 @@ accutest:
 	$(src)/xyzinfo accutest3.xyz
 	$(src)/accutest
 
-jettest:
-	$(src)/jettest
+vejtest:
+	$(src)/vejtest
 
 rbvtest:
 	$(src)/rbvtest
@@ -111,7 +111,6 @@ plots:
 clean:
 	rm -f *~ core.* mctest.xyz syntest.xyz accutest[123].dat	\
 		accutest[123].xyz dynamicslog-*.txt *.xyz.log		\
-		jettest*.dat mctest.psd syntest.{fits,reg} comp-*.xyz	\
+		vejtest*.dat mctest.psd syntest.{fits,reg} comp-*.xyz	\
 		rbvtest*.dat vtest-[123].dat therm*.dat savetest*.xyz	\
 		randtest*.dat syntest.reg syntest.fits
-

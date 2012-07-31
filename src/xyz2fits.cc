@@ -233,6 +233,7 @@ bool parseCommandLine(int argc, char** argv, runtimePar& runtime,
 	  image.setJet(true);
 	  image.jet(jet[slice(0, 2, 1)]);
 	  image.jetHalfAngle(jet[2] / 2.0);
+	  image.rotPeriod(jet[3]);
 	}
       case 'm': image.max(atol(optarg)); break;
       case 'o': image.outfileName(string(optarg)); break;
@@ -284,8 +285,65 @@ void usage() {
   cerr << "Usage: " << SUBPROJECT << " [OPTION]... xyzfile1.xyz [xyzfile2.xyz...]\n\
 \n\
 Mandatory arguments to long options are mandatory for short options too.\n\
+\n\
+  Generic options:\n\
+\n\
+    -h, --help              display this help\n\
+    -v, --verbose           output more info than necessary\n\
+\n\
+  Output units/format:\n\
+\n\
+    --ecliptic              output in ecliptic coordinates\n\
+    -o FILENAME             output to file FILENAME (default: out.fits)\n\
+    --offset=VAL            Coordinate offsets of the comet position in\n\
+                            arcseconds, only affects the WCS header keywords\n\
+                            (i.e., this does not include the cos(Dec)\n\
+                            correction)\n\
+    -p, --platescale=VAL    set the platescale to VAL, may be two values\n\
+                            for x and y platescales, or one value, z, in\n\
+                            which case the platescale will be -z z (units:\n\
+                            arcsec/pix, default: -1 1)\n\
+    -s, --size=VAL          set the image size to VAL (units: pixels,\n\
+                            default: 512 512)\n\
+\n\
+  Grain weighting:\n\
+\n\
     -a, --afrho=VAL         weight the final image by dust production,\n\
                             afrho = r^afrhoSlope (default: -2)\n\
+    --fscales=s1,s2,...     a list of values with which to scale each input\n\
+                            file s1 corresponds to the first file; if there\n\
+                            are more files than scales, the last scale will\n\
+                            be repeated (default: 1)\n\
+    --psd=STRING            set the nuclear particle size distribution\n\
+                            function, current options are ism, a^x (where\n\
+                            x is some value), hanner a0 M N, or none; all\n\
+                            psds assume the simulation psd is dn/dlog(a) ~ 1;\n\
+                            For reference, dn/dbeta = a^x = beta^(-x-2)\n\
+                            (default: none)\n\
+    --scattering=VAL        weight the final image by each particle's\n\
+                            scattered light at wavelength VAL (units:\n\
+                            microns, default: 0)\n\
+    -t, --thermal=VAL       weight the final image by each particle's thermal\n\
+                            emission at wavelength VAL, set to zero for no\n\
+                            thermal weighting (units: microns, default: 24)\n\
+\n\
+  Modify grain/comet/observer parameters:\n\
+\n\
+    -d, --density=VAL       use this grain density when transforming\n\
+                            between beta and radius; ignored if radius or\n\
+                            grain density is defined in the input file\n\
+                            (units: g/cm^3, default: 1)\n\
+    --npole=VAL             direction of the north pole in ecliptic\n\
+                            coordinates\n\
+    --observer=STRING       the location of the observer, Earth (default),\n\
+                            Spitzer, or a position vector in units of AU\n\
+    --period=VAL            set the rotation period in hours (default: 0)\n\
+    --phase=VAL             set the rotation phase (at the time of \n\
+                            observation) in degrees, where phase = 0 is along\n\
+                            the Vernal Equinox. (default: 0)\n\
+\n\
+  Particle limiting options:\n\
+\n\
     --ageinvert             plot all particles except\n\
                             RANGE[0] < age < RANGE[1] (default: disabled)\n\
     --agerange=RANGE        only plot particles with ages inside RANGE:\n\
@@ -296,16 +354,8 @@ Mandatory arguments to long options are mandatory for short options too.\n\
     --betarange=RANGE       only plot particles with beta values inside\n\
                             RANGE: betaLowerLimit <= beta <= betaUpperLimit\n\
                             (default: plot all)\n\
-    -d, --density=VAL       use this grain density when transforming\n\
-                            between beta and radius; ignored if radius or\n\
-                            grain density is defined in the input file\n\
-                            (units: g/cm^3, default: 1)\n\
-    --ecliptic              output in ecliptic coordinates\n\
-    --fscales=s1,s2,...     a list of values with which to scale each input\n\
-                            file s1 corresponds to the first file; if there\n\
-                            are more files than scales, the last scale will\n\
-                            be repeated (default: 1)\n\
-    -h, --help              display this help\n\
+    --jet=lon,lat,th,per    specify jet location (longitude, latitude),\n\
+                            opening angle, and period. (units: deg, hr)\n\
     --latinvert             plot all particles except\n\
                             RANGE[0] < lat < RANGE[1] (default: disabled)\n\
     --latrange=RANGE        only plot particles with latitude values inside\n\
@@ -319,29 +369,6 @@ Mandatory arguments to long options are mandatory for short options too.\n\
                             (default: plot all)\n\
     -m, --max=VAL           plot the first VAL particles (default: plot\n\
                             all)\n\
-    --npole=VAL             direction of the north pole in ecliptic\n\
-                            coordinates\n\
-    -o FILENAME             output to file FILENAME (default: out.fits)\n\
-    --observer=STRING       the location of the observer, Earth (default),\n\
-                            Spitzer, or a position vector in units of AU\n\
-    --offset=VAL            Coordinate offsets of the comet position in\n\
-                            arcseconds, only affects the WCS header keywords\n\
-                            (i.e., this does not include the cos(Dec)\n\
-                            correction)\n\
-    --period=VAL            set the rotation period in hours (default: 0)\n\
-    --phase=VAL             set the rotation phase (at the time of \n\
-                            observation) in degrees, where phase = 0 is along\n\
-                            the Vernal Equinox. (default: 0)\n\
-    -p, --platescale=VAL    set the platescale to VAL, may be two values\n\
-                            for x and y platescales, or one value, z, in\n\
-                            which case the platescale will be -z z (units:\n\
-                            arcsec/pix, default: -1 1)\n\
-    --psd=STRING            set the nuclear particle size distribution\n\
-                            function, current options are ism, a^x (where\n\
-                            x is some value), hanner a0 M N, or none; all\n\
-                            psds assume the simulation psd is dn/dlog(a) ~ 1;\n\
-                            For reference, dn/dbeta = a^x = beta^(-x-2)\n\
-                            (default: none)\n\
     --radinvert             plot all particles except\n\
                             RANGE[0] < radius < RANGE[1] (default: disabled)\n\
     --radrange=RANGE        only plot particles with radii inside\n\
@@ -349,21 +376,12 @@ Mandatory arguments to long options are mandatory for short options too.\n\
                             (default: plot all)\n\
     --rhlimit=VAL           remove grains produced at rh > rhlimit; set to\n\
                             -1 for no limit (default: -1)\n\
-    --scattering=VAL        weight the final image by each particle's\n\
-                            scattered light at wavelength VAL (units:\n\
-                            microns, default: 0)\n\
-    -s, --size=VAL          set the image size to VAL (units: pixels,\n\
-                            default: 512 512)\n\
     --suninvert             plot all particles except\n\
                             RANGE[0] < z_sun < RANGE[1] where z_sun is the\n\
                             Sun-zenith angle (default: disabled)\n\
     --sunrange=RANGE        only plot particles with latitude values inside\n\
                             RANGE: RANGE[0] <= z_sun <= RANGE[1], where\n\
                             z_sun is the Sun-zenith angle (default: plot all)\n\
-    -t, --thermal=VAL       weight the final image by each particle's thermal\n\
-                            emission at wavelength VAL, set to zero for no\n\
-                            thermal weighting (units: microns, default: 24)\n\
-    -v, --verbose           output more info than necessary\n\
     --vlimit=VAL            limit the velocities to VAL*sqrt(beta/r_h)\n\
 \n"
        << "(c) 2005-2010,2012 Michael S. Kelley\n";

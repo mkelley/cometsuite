@@ -37,6 +37,7 @@ AC_CONFIG_FILES([
    api/Doxyfile
    src/Makefile
    data/Makefile
+   test/Makefile
 ])
 
 AC_OUTPUT
