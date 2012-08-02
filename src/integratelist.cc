@@ -51,11 +51,11 @@ int main(int argc, char *argv[])
   int status;
 
   switch (parseCommandLine(argc, argv, xyzfileNames, parameters, outfile, jd)) {
-  case NOERROR:
+  case CL_NOERROR:
     break;
-  case HELP:
+  case CL_HELP:
     return EXIT_SUCCESS;
-  case BADINPUT:
+  case CL_BADINPUT:
     cerr << "Error opening the first xyz file.\n";    
   default:
     return EXIT_FAILURE;
@@ -262,12 +262,12 @@ int parseCommandLine(int argc, char** argv, vector<string>& xyzfileNames,
 
     if (!files || help) {
       usage();
-      return HELP;
+      return CL_HELP;
     }
 
     // Read in the first parameter set
     inxyz.xyzopen(xyzfileNames[0], xyzstream::READ);
-    if (inxyz.fail()) return BADINPUT;
+    if (inxyz.fail()) return CL_BADINPUT;
     parameters = inxyz.readParameters();
     inxyz.close();
 
@@ -280,10 +280,10 @@ int parseCommandLine(int argc, char** argv, vector<string>& xyzfileNames,
       parameters.setParameter(keyword[j], value[j]);
     }
 
-    return NOERROR;
+    return CL_NOERROR;
   } else {
     usage();
-    return HELP;
+    return CL_HELP;
   }
 }
 

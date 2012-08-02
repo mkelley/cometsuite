@@ -2,8 +2,16 @@
 
 	* rundynamics.cc Fixed exit code for --help.  Changed help output
 	to stdout from stderr.  Working on reformatting help output.
+	Updated for new rundynamics.h enum constants.
 
 	* rundynamics.h Changed command line enum constant names.
+
+	* integratelist.cc Updated for new rundynamics.h enum constants.
+
+	* syn2ds9.cc Updated for new rundynamics.h enum constants.
+
+	* doc/Makefile.am Now build and install man page for rundynamics
+	via help2man.
 
 2012-07-31  Michael S. Kelley <msk@astro.umd.edu>
 

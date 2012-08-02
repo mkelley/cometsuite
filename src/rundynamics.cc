@@ -248,7 +248,7 @@ int parseCommandLine(int argc, char** argv, paramSet& parameters,
 
 	if (longOptions[optionIndex].name == "version") {
 	  printVersion();
-	  break;
+	  return CL_VERSION;
 	}
 
 	break;
@@ -310,7 +310,7 @@ int parseCommandLine(int argc, char** argv, paramSet& parameters,
     }
 
     if ((!file || help) && !example) {
-      usage(argv[0]);
+      printHelp(argv[0]);
       return CL_HELP;
     }
 
@@ -339,7 +339,7 @@ int parseCommandLine(int argc, char** argv, paramSet& parameters,
 
     return CL_NOERROR;  // no errors
   } else {
-    usage(argv[0]);
+    printHelp(argv[0]);
     return CL_HELP;
   }
 }
@@ -370,11 +370,18 @@ void timeAndStatus(long n, clock_t& start, string status, bool last,
 
 /** Prints the program help screen. */
 void printHelp(char* argv0) {
-  cout << SUBPROJECT << "\n";
   cout << "Usage: " << argv0 << " [OPTION]... parameter-file.par\n\
 Simulate dust dynamics in the Solar System.\n\
 \n\
 Mandatory arguments to long options are mandatory for short options too.\n\
+\n\
+BOOL may be one of {true, yes, on, 1, false, no, off, 0}.\n\
+\n\
+Parameter values may be enclosed in quotes, e.g.,\n\
+  --beta=\"1e-3 2e-3 4e-3\"\n\
+or\n\
+  -b \"0.1 0.01 0.001\".\n\
+Command-line parameters override the parameter file.\n\
 \n\
 Global options:\n\
       --box=SIZE                set the integration box to SIZE km or set\n\
@@ -406,18 +413,16 @@ Syndyne specific options:\n\
 Make Comet specific options:\n\
       --nparticles=N            set the number of Make Comet particles to N\n\
 \n\
-Other output:\n\
+Other options:\n\
   -h, --help                    display this help and exit\n\
   --version                     output version information and exit\n\
 \n\
-BOOL may be one of {true, yes, on, 1, false, no, off, 0}.\n\
-Parameter values may be enclosed in quotes, e.g. --beta=\"1e-3 2e-3 4e-3\" or\n\
-  -b \"0.1 0.01 0.001\".\n\
-Command line parameters override the parameter file.\n\n";
-  cout << PACKAGE_STRING << "\n(c) 2005-2010,2012 Michael S. Kelley\n";
+Report bugs to: msk@astro.umd.edu\n\
+" << PACKAGE_NAME << " home page:<http://www.astro.umd.edu/~msk/projects/dynamics/>\n";
 }
 
 /** Prints the program version screen. */
 void printVersion() {
-  cout << SUBPROJECT << " (" << PACKAGE_NAME << ") " << VERSION << "\n";
+  cout << SUBPROJECT << " (" << PACKAGE_NAME << ") " << VERSION << "\n\
+Copyright (C) 2012 Michael S. Kelley\n";
 }
