@@ -35,6 +35,6 @@
 
 #define DEBUG 0
 
-enum parseCommandLineFlags { NOERROR, HELP, NOFILE, BADINPUT };
+enum parseCommandLineFlags { CL_NOERROR, CL_HELP, CL_NOFILE, CL_VERSION };
 
 #endif

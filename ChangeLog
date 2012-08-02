@@ -1,3 +1,10 @@
+2012-08-02  Michael S. Kelley <msk@astro.umd.edu>
+
+	* rundynamics.cc Fixed exit code for --help.  Changed help output
+	to stdout from stderr.  Working on reformatting help output.
+
+	* rundynamics.h Changed command line enum constant names.
+
 2012-07-31  Michael S. Kelley <msk@astro.umd.edu>
 
 	* vejtest.cc Renamed from jettest.cc.  Added an actual jet test.
