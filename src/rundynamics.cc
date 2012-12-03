@@ -2,8 +2,7 @@
 
   The rundynamics program.
 
-  Copyright (C) 2005,2006,2007,2008,2009,2012 by Michael S. Kelley
-  <msk@astro.umd.edu>
+  Copyright (C) 2005-2009,2012 by Michael S. Kelley <msk@astro.umd.edu>
 
  ***************************************************************************/
 
@@ -28,7 +27,8 @@
 using namespace std;
 
 int parseCommandLine(int, char**, paramSet&, string&);
-void usage(char *argv0);
+void printHelp(char *argv0);
+void printVersion();
 void timeAndStatus(long, clock_t&, string, bool, logFile&);
 
 /** \todo Parallelize?
@@ -41,13 +41,15 @@ int main(int argc, char *argv[])
   int r;
 
   switch (parseCommandLine(argc, argv, parameters, infile)) {
-  case NOERROR:
+  case CL_NOERROR:
     break;
-  case HELP:
+  case CL_HELP:
     return EXIT_SUCCESS;
-  case NOFILE:
+  case CL_VERSION:
+    return EXIT_SUCCESS;
+  case CL_NOFILE:
     cerr << "Error parsing the command line.\n";
-  case BADINPUT:
+  case CL_BADINPUT:
     cerr << "Error parsing the parameter file.\n";    
   default:
     return EXIT_FAILURE;
@@ -130,6 +132,7 @@ int parseCommandLine(int argc, char** argv, paramSet& parameters,
       {"program",            required_argument, 0, 0  },
       {"steps",              required_argument, 0, 's'},
       {"tol",                required_argument, 0, 't'},
+      {"version",            no_argument,       0, 0  },
       {"xyzfile",            required_argument, 0, 'x'},
       {0, 0, 0, 0}
     };
@@ -243,6 +246,11 @@ int parseCommandLine(int argc, char** argv, paramSet& parameters,
 	  break;
 	}
 
+	if (longOptions[optionIndex].name == "version") {
+	  printVersion();
+	  return CL_VERSION;
+	}
+
 	break;
 
       case 'b':
@@ -260,8 +268,8 @@ int parseCommandLine(int argc, char** argv, paramSet& parameters,
 	break;
 
       case 'h':
-	help = true;
-	break;
+	printHelp(argv[0]);
+	return CL_HELP;
 
       case 'j':
 	keyword[++i] = "JD";
@@ -301,7 +309,10 @@ int parseCommandLine(int argc, char** argv, paramSet& parameters,
       infile = string(argv[optind]);
     }
 
-    if ((!file || help) && !example) usage(argv[0]);
+    if ((!file || help) && !example) {
+      printHelp(argv[0]);
+      return CL_HELP;
+    }
 
     if (example) {
       if (example > 1)
@@ -312,10 +323,10 @@ int parseCommandLine(int argc, char** argv, paramSet& parameters,
     }
 
     // Stop here if there is no file to load
-    if (!file) return NOFILE;
+    if (!file) return CL_NOFILE;
 
     // Load the parameter file, return 3 on an error
-    if (!parameters.loadParameters(infile)) return BADINPUT;
+    if (!parameters.loadParameters(infile)) return CL_BADINPUT;
 
     // Set any parameters specified on the command line
     for (int j=0; j<=i; j++) {
@@ -326,10 +337,10 @@ int parseCommandLine(int argc, char** argv, paramSet& parameters,
       parameters.setParameter(keyword[j], value[j]);
     }
 
-    return NOERROR;  // no errors
+    return CL_NOERROR;  // no errors
   } else {
-    usage(argv[0]);
-    return HELP;
+    printHelp(argv[0]);
+    return CL_HELP;
   }
 }
 
@@ -357,13 +368,21 @@ void timeAndStatus(long n, clock_t& start, string status, bool last,
   }
 }
 
-/** Prints the program usage and info. */
-void usage(char* argv0) {
-  cerr << PACKAGE_STRING << "\n";
-  cerr << "Usage: " << argv0 << " [OPTION]... parameter-file.par\n\
+/** Prints the program help screen. */
+void printHelp(char* argv0) {
+  cout << "Usage: " << argv0 << " [OPTION]... parameter-file.par\n\
 Simulate dust dynamics in the Solar System.\n\
 \n\
 Mandatory arguments to long options are mandatory for short options too.\n\
+\n\
+BOOL may be one of {true, yes, on, 1, false, no, off, 0}.\n\
+\n\
+Parameter values may be enclosed in quotes, e.g.,\n\
+  --beta=\"1e-3 2e-3 4e-3\"\n\
+or\n\
+  -b \"0.1 0.01 0.001\".\n\
+Command-line parameters override the parameter file.\n\
+\n\
 Global options:\n\
       --box=SIZE                set the integration box to SIZE km or set\n\
                                 SIZE < 0 to disable (default: disabled)\n\
@@ -372,7 +391,6 @@ Global options:\n\
   -c, --comet=NAME              set the comet to NAME\n\
   -e                            print an example parameter file\n\
       --example                 print a commented example parameter file\n\
-  -h, --help                    display this help\n\
   -j, --jd=DATE                 set the Julian date to DATE\n\
   -k, --kernel=FILE             set the kernel to FILE\n\
       --ltt[=BOOL]              enable/disable light travel time correction\n\
@@ -395,10 +413,16 @@ Syndyne specific options:\n\
 Make Comet specific options:\n\
       --nparticles=N            set the number of Make Comet particles to N\n\
 \n\
-BOOL may be one of {true, yes, on, 1, false, no, off, 0}.\n\
-Parameter values may be enclosed in quotes, e.g. --beta=\"1e-3 2e-3 4e-3\" or\n\
-  -b \"0.1 0.01 0.001\".\n\
-Command line parameters override the parameter file.\n\
+Other options:\n\
+  -h, --help                    display this help and exit\n\
+  --version                     output version information and exit\n\
 \n\
-(c) 2005-2010,2012 Michael S. Kelley\n";
+Report bugs to: msk@astro.umd.edu\n\
+" << PACKAGE_NAME << " home page:<http://www.astro.umd.edu/~msk/projects/dynamics/>\n";
+}
+
+/** Prints the program version screen. */
+void printVersion() {
+  cout << SUBPROJECT << " (" << PACKAGE_NAME << ") " << VERSION << "\n\
+Copyright (C) 2012 Michael S. Kelley\n";
 }

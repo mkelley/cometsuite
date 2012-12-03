@@ -31,6 +31,8 @@ if test x"${ac_cv_header_getxyz_h}" = xno; then
    AC_MSG_ERROR([getxyz.h not found.])
 fi
 
+AM_MISSING_PROG(HELP2MAN, help2man, $missing_dir)
+
 AC_CONFIG_FILES([
    Makefile
    doc/Makefile
