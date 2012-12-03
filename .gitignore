@@ -16,6 +16,7 @@ src/rbvtest
 src/rundynamics
 src/syn2ds9
 src/vtest
+src/vejtest
 src/xyz2fits
 src/xyz2psd
 src/xyzinfo

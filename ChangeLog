@@ -1,3 +1,13 @@
+2012-12-03  Michael S. Kelley <msk@astro.umd.edu>
+
+	* Physical.h, Physical.cc (composition) Allow compositions to be
+	set with a Composition structure so that pfunctions.cc can modify
+	Geometric to set the bulk density.
+
+	* pfunctions.cc (bulkdensity) Found a bug that prevented setting
+	the bulk density of the Geometric composition.  Now, modify a copy
+	of Geometric and set via particle::composition().
+
 2012-07-31  Michael S. Kelley <msk@astro.umd.edu>
 
 	* vejtest.cc Renamed from jettest.cc.  Added an actual jet test.

@@ -2,7 +2,7 @@
 
   Implements the physical description of CometSuite grains.
 
-  Copyright (C) 2008,2009 by Michael S. Kelley <msk@astro.umd.edu>
+  Copyright (C) 2008,2009,2012 by Michael S. Kelley <msk@astro.umd.edu>
 
  ***************************************************************************/
 
@@ -247,6 +247,8 @@ void Physical::composition(const int c) {
   }
   _graindensity = _composition.bulkdensity;
 }
+/** Set the composition. */
+void Physical::composition(Composition c) { _composition = c; }
 
 /** Return the grain density (g/cm$^3$). */
 double Physical::graindensity() { return _graindensity; }
