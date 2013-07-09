@@ -16,6 +16,7 @@ src/rbvtest
 src/rundynamics
 src/syn2ds9
 src/vtest
+src/vejtest
 src/xyz2fits
 src/xyz2psd
 src/xyzinfo
@@ -46,9 +47,14 @@ doc/userguide/*.aux
 doc/*.info
 doc/stamp-vti
 doc/version.texi
+doc/*.1
 m4/*
 src/.deps
 test-results/*
+test/*.dat
+test/*.psd
+test/*.fits
+test/*.reg
 
 api/Doxyfile
 src/.deps/

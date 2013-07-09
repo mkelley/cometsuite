@@ -48,14 +48,14 @@ xyzProject::xyzProject() {
   _Coffset.beta = 0;
   _npole[0] = 0.0;
   _npole[1] = 90.0;
-  _rotRate = 0.0;
+  _rotFreq = 0.0;
   _rotPhase = 0.0;
 
   _jet = false;
   _jetHalfAngle = 0.0;
-  _jetLB.lambda = 0;
-  _jetLB.beta = 0;
-  _jetV = Vector(0, 0, 0);
+  _jetLL.lambda = 0;
+  _jetLL.beta = 0;
+  _jetV0 = Vector(0, 0, 0);
 
   _rhlimit = -1;
   _vejGen.v0(-1);
@@ -141,26 +141,31 @@ string xyzProject::observerName() { return _observerName; }
 /** Set the observer's name. */
 void xyzProject::observerName(const string obs) { _observerName = obs; }
 
-/** Return the rotation period in hours. */
+/** Return the rotation period (hr). */
 double xyzProject::rotPeriod() {
-  if (_rotRate == 0) {
+  if (_rotFreq == 0) {
     return 0;
   } else {
-    return 0.1 / _rotRate;
+    return 0.1 / _rotFreq;
   }
 }
-/** Set the rotation period in hours. */
+/** Set the rotation period (hr). */
 void xyzProject::rotPeriod(const double P) {
   if (P == 0) {
-    _rotRate = 0;
+    _rotFreq = 0;
   } else {
-    _rotRate = 0.1 / P;
+    _rotFreq = 0.1 / P;
   }
 }
 
-/** Return the rotation phase in degrees. */
+/** Return the rotation frequency (deg/s). */
+double xyzProject::rotFreq() { return _rotFreq; }
+/** Set the rotation frequency (deg/s). */
+void xyzProject::rotFreq(const double W) { _rotFreq = W; }
+
+/** Return the rotation phase (deg). */
 double xyzProject::rotPhase() { return _rotPhase; }
-/** Set the rotation phase in degrees. */
+/** Set the rotation phase (deg). */
 void xyzProject::rotPhase(const double phi) { _rotPhase = phi; }
 
 /** Return the absolute positional offsets in units of degrees. */
@@ -279,27 +284,32 @@ bool xyzProject::jetOn() { return _jet; }
 /** Set the jet status. */
 void xyzProject::setJet(const bool j) { _jet = j; }
 
-/** Return the jet's location (ecliptic lambda, beta). */
-longlat xyzProject::jet() { return _jetLB; }
-/** Set the jet's location (ecliptic lambda, beta). */
+/** Set the jet's planetocentric coordinates (lon, lat). */
 void xyzProject::jet(const valarray<float> jet) {
-  _jetLB.lambda = jet[0];
-  _jetLB.beta = jet[1];
-  _jetV = longlatToVector(_jetLB);
+  _jetLL.lambda = jet[0];
+  _jetLL.beta = jet[1];
 }
-/** Set the jet's location (ecliptic lambda, beta). */
+/** Set the jet's planetocentric coordinates (lon, lat). */
 void xyzProject::jet(longlat jet) {
-  _jetLB.lambda = jet.lambda;
-  _jetLB.beta = jet.beta;
-  _jetV = longlatToVector(_jetLB);
+  _jetLL.lambda = jet.lambda;
+  _jetLL.beta = jet.beta;
 }
 
-/** Return the jet location (ecliptic rectangular coods). */
-Vector xyzProject::jetV() { return _jetV; }
-/** Set the jet status. */
-void xyzProject::jetV(const Vector j) {
-  _jetV = j;
-  _jetLB = getEcliptic(Vector(0, 0, 0), j);
+/** Return the jet's planetocentric coordinates (lon, lat). */
+longlat xyzProject::jetLL() { return _jetLL; }
+
+/** Compute and return the jet's instantaneous vector (ecliptic
+    rectangular coods). */
+Vector xyzProject::jetV(const double age) {
+  /* Rotate the jet (taking care that t = -age) around the pole. */
+  double th = (_rotFreq * -age + _rotPhase) * M_PI / 180.0;
+  return longlatToVector(_jetLL).rotate(nPole, th);
+}
+
+/** Compute and return the jet instantaneous vector (ecliptic lambda,
+    beta). */
+longlat xyzProject::jetLB(const double age) {
+  return jetV(age).angles();
 }
 
 /** Return the half width of the jet opening angle (degrees). */
@@ -514,7 +524,7 @@ void xyzProject::nextParticle() {
 
     // Rotate the nucleus
     origin.lambda += _rotPhase;
-    origin.lambda -= fmod(_rotRate * _p.age(), 360.0);
+    origin.lambda += fmod(_rotFreq * -_p.age(), 360.0);
 
     // Branch cut at 0 deg
     while (origin.lambda < 0)
@@ -576,7 +586,7 @@ void xyzProject::nextParticle() {
   // jet limit
   if (_jet) {
     bool keep = false;
-    float th = acos(_p.vej().unit() * _jetV) * 180.0 / M_PI;
+    float th = acos(jetV(_p.age()).cosangle(_p.vej())) * 180.0 / M_PI;
     if (th <= _jetHalfAngle) keep = true;
     if (!keep) throw(jetLimit);
   }

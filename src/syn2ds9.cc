@@ -45,9 +45,9 @@ int main(int argc, char *argv[])
   bool verbose = false, color = true, ecliptic = false;
   switch (parseCommandLine(argc, argv, infiles, outfile, observerName,
 			   offset, verbose, color, ecliptic)) {
-  case NOERROR:
+  case CL_NOERROR:
     break;
-  case HELP:
+  case CL_HELP:
     return EXIT_SUCCESS;
   default:
     return EXIT_FAILURE;
@@ -176,13 +176,13 @@ int parseCommandLine(int argc, char** argv, vector<string>& infiles,
 
     if (!files || help) {
       usage();
-      return HELP;
+      return CL_HELP;
     }
 
-    return NOERROR;
+    return CL_NOERROR;
   } else {
     usage();
-    return HELP;
+    return CL_HELP;
   }
 }
 

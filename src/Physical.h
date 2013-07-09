@@ -1,5 +1,5 @@
 /***************************************************************************
-  Copyright (C) 2008,2009 by Michael S. Kelley <msk@astro.umd.edu>
+  Copyright (C) 2008,2009,2012 by Michael S. Kelley <msk@astro.umd.edu>
 
  ***************************************************************************/
 
@@ -32,6 +32,7 @@ class Physical {
   void        radius(const double);
   Composition composition();
   void        composition(const int);
+  void        composition(Composition);
   double      graindensity();
   void        graindensity(const double);
   double      fractalDim();

@@ -19,6 +19,7 @@
 #include <vector>
 #include "pfunctions.h"
 #include "particle.h"
+#include "Composition.h"
 #include "Distribution.h"
 #include "Vector.h"
 #include "longlat.h"
@@ -91,7 +92,7 @@ pfunctions::pfunctions() {
 	  pole.
 	- LATITUDE thetaMin thetaMax
 	  Set the ejection latitude to range from thetaMin to
-	  thetaMax.
+	  thetaMax.  0 is the pole.
 	- JET longitude latitude angle period
 	  Eject grains in a jet.  Specify the planetocentric longitude
 	  and latitude (degrees) of the jet at t=0 (the time of
@@ -804,8 +805,13 @@ void pfunctions::composition(string list, particle &p) {
     grain.  Overriding a real material's bulk density is not allowed.
 */
 void pfunctions::bulkdensity(string list, particle &p) {
-  if (p.composition().name == GEOMETRIC)
-    p.composition().bulkdensity = atof(list.c_str());
+  if (p.composition().name == GEOMETRIC) {
+    Composition modifiedGeometric = p.composition();
+    modifiedGeometric.bulkdensity = atof(list.c_str());
+    p.composition(modifiedGeometric);
+  } else {
+    cerr << "Can only modify bulk density for the \"geometric\" composition.\n";
+  }
 }
 
 /** FRACTALDIM D [a0].  The grain will be mixed with vacuum and have a

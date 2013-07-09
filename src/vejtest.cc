@@ -1,9 +1,8 @@
 /***************************************************************************
 
-  Runs various jet ejection velocity methods and writes out the
-  results.
+  Runs various ejection velocity methods and writes out the results.
 
-  Copyright (C) 2008-2010 by Michael S. Kelley <msk@astro.umd.edu>
+  Copyright (C) 2008-2010,2012 by Michael S. Kelley <msk@astro.umd.edu>
 
  ***************************************************************************/
 
@@ -22,8 +21,8 @@
 #include "pfunctions.h"
 #include "rundynamics.h"
 
-#define SUBPROJECT "jettest"
-#define OUTBASENAME "jettest-"
+#define SUBPROJECT "vejtest"
+#define OUTBASENAME "vejtest-"
 #define N 10000
 
 using namespace std;
@@ -172,6 +171,34 @@ int main(int argc, char *argv[])
   outf << "# v_x v_y v_z\n";
 
   parameters.pFunc("velocity iso normal 0.3 0.2; q_d iso; suncone 0 180;");
+  pf.setup(parameters, p);
+  for (int i=0; i<N; i++) {
+    p.next();
+    outf << p.vej() << "\n";
+  }
+
+  outf.close();
+
+  /**********************************************************************/
+  cout << "Test 6: jet.\n";
+
+  f = string(OUTBASENAME) + "jet.dat";
+  outf.open(f.c_str(), ios::out | ios::trunc);
+  outf.precision(3);
+  outf << "# Test 6: jet.\n";
+  outf << "# The jet is located at (lon, lat) = (0, 45).\n";
+  outf << "# The opening angle is 20 deg.\n";
+  outf << "# The velocity is isotropic, v_0 = 1 km/s.\n";  
+  outf << "# The pole is located at (lam, bet) = (0, 90).\n";
+  outf << "# The period is 8 hr and the simulation is 4 hr long.\n";
+  outf << "# Output is relative to the comet, units of km/s\n";
+  outf << "# The sun is located at " <<
+    p.istate().r[0] / _AU << " " <<
+    p.istate().r[1] / _AU << " " <<
+    p.istate().r[2] / _AU << " AU\n";
+  outf << "# v_x v_y v_z\n";
+
+  parameters.pFunc("jet 0 45 45 8; pole 0 90; velocity iso 1.0");
   pf.setup(parameters, p);
   for (int i=0; i<N; i++) {
     p.next();

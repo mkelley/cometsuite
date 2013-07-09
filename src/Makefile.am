@@ -3,7 +3,7 @@ AM_CPPFLAGS = -D_DATADIR='"$(pkgdatadir)"'
 
 bin_PROGRAMS = rundynamics integratelist integratexyz syn2ds9 xyz2fits	\
 	xyz2psd xyzinfo
-noinst_PROGRAMS = accutest jettest rbvtest vtest randtest
+noinst_PROGRAMS = accutest vejtest rbvtest vtest randtest
 
 accutest_SOURCES = Composition.h CoordTrans.h CoordTrans.cc		\
 	Distribution.h Distribution.cc Dynamical.h Dynamical.cc		\
@@ -17,7 +17,7 @@ integratexyz_SOURCES = Composition.h CoordTrans.h CoordTrans.cc		\
 	Distribution.h Distribution.cc Dynamical.h Dynamical.cc		\
 	GrainTemperature.h GrainTemperature.cc Integrator.h		\
 	Integrator.cc Physical.h Physical.cc Vector.h Vector.cc Vej.h	\
-	Vej.cc everhart.c getopt.h getopt.c getopt1.c integratexyz.cc	\
+	Vej.cc everhart.c integratexyz.cc	\
 	logFile.h logFile.cc longlat.h mskerr.h paramSet.h paramSet.cc	\
 	particle.h particle.cc pfunctions.h pfunctions.cc		\
 	planet_lookup.c ra15.h ra15.cc rundynamics.h state.h		\
@@ -27,16 +27,16 @@ integratelist_SOURCES = Composition.h CoordTrans.h CoordTrans.cc	\
 	Distribution.h Distribution.cc Dynamical.h Dynamical.cc		\
 	GrainTemperature.h GrainTemperature.cc Integrator.h		\
 	Integrator.cc Physical.h Physical.cc Vector.h Vector.cc Vej.h	\
-	Vej.cc everhart.c getopt.h getopt.c getopt1.c integratelist.cc	\
+	Vej.cc everhart.c integratelist.cc	\
 	logFile.h logFile.cc longlat.h mskerr.h paramSet.h paramSet.cc	\
 	particle.h particle.cc pfunctions.h pfunctions.cc		\
 	planet_lookup.c ra15.h ra15.cc rundynamics.h state.h		\
 	StringConv.h StringConv.cc xyzstream.h xyzstream.cc
 
-jettest_SOURCES = Composition.h CoordTrans.h CoordTrans.cc		\
+vejtest_SOURCES = Composition.h CoordTrans.h CoordTrans.cc		\
 	Distribution.h Distribution.cc Dynamical.h Dynamical.cc		\
 	GrainTemperature.h GrainTemperature.cc Physical.h Physical.cc	\
-	Vector.h Vector.cc Vej.h Vej.cc longlat.h jettest.cc		\
+	Vector.h Vector.cc Vej.h Vej.cc longlat.h vejtest.cc		\
 	paramSet.h paramSet.cc particle.h particle.cc pfunctions.h	\
 	pfunctions.cc rundynamics.h state.h StringConv.h StringConv.cc
 
@@ -53,7 +53,7 @@ rundynamics_SOURCES = Composition.h CoordTrans.h CoordTrans.cc		\
 	Distribution.h Distribution.cc Dynamical.h Dynamical.cc		\
 	GrainTemperature.h GrainTemperature.cc Integrator.h		\
 	Integrator.cc Physical.h Physical.cc Vector.h Vector.cc Vej.h	\
-	Vej.cc everhart.c getopt.h getopt.c getopt1.c logFile.h		\
+	Vej.cc everhart.c logFile.h		\
 	logFile.cc longlat.h mskerr.h paramSet.h paramSet.cc		\
 	particle.h particle.cc pfunctions.h pfunctions.cc		\
 	planet_lookup.c ra15.h ra15.cc rundynamics.h rundynamics.cc	\
@@ -62,7 +62,7 @@ rundynamics_SOURCES = Composition.h CoordTrans.h CoordTrans.cc		\
 syn2ds9_SOURCES = Composition.h CoordTrans.h CoordTrans.cc		\
 	Distribution.h Distribution.cc Dynamical.h Dynamical.cc		\
 	GrainTemperature.h GrainTemperature.cc Physical.h Physical.cc	\
-	Vector.h Vector.cc Vej.h Vej.cc getopt.h getopt.c getopt1.c	\
+	Vector.h Vector.cc Vej.h Vej.cc 	\
 	longlat.h mskerr.h paramSet.h paramSet.cc particle.h		\
 	particle.cc planet_lookup.c projection.h projection.cc		\
 	rundynamics.h state.h syn2ds9.cc StringConv.h StringConv.cc	\
@@ -78,8 +78,8 @@ vtest_SOURCES = Composition.h CoordTrans.h CoordTrans.cc		\
 xyz2fits_SOURCES = Composition.h CoordTrans.h CoordTrans.cc		\
 	Distribution.h Distribution.cc Dynamical.h Dynamical.cc		\
 	GrainTemperature.h GrainTemperature.cc Physical.h Physical.cc	\
-	Vector.h Vector.cc Vej.h Vej.cc everhart.c getopt.h getopt.c	\
-	getopt1.c longlat.h mskerr.h paramSet.h paramSet.cc particle.h	\
+	Vector.h Vector.cc Vej.h Vej.cc everhart.c \
+	longlat.h mskerr.h paramSet.h paramSet.cc particle.h	\
 	particle.cc particleWeights.h particleWeights.cc pfunctions.h	\
 	pfunctions.cc planet_lookup.c projection.h projection.cc	\
 	round.h rundynamics.h state.h StringConv.h StringConv.cc	\
@@ -89,7 +89,7 @@ xyz2fits_SOURCES = Composition.h CoordTrans.h CoordTrans.cc		\
 xyz2psd_SOURCES = Composition.h CoordTrans.h CoordTrans.cc		\
 	Distribution.h Distribution.cc Dynamical.h Dynamical.cc		\
 	GrainTemperature.h GrainTemperature.cc Physical.h Physical.cc	\
-	Vector.h Vector.cc Vej.h Vej.cc getopt.h getopt.c getopt1.c	\
+	Vector.h Vector.cc Vej.h Vej.cc \
 	longlat.h mskerr.h paramSet.h paramSet.cc particle.h		\
 	particle.cc particleWeights.h particleWeights.cc pfunctions.h	\
 	pfunctions.cc planet_lookup.c projection.h projection.cc	\

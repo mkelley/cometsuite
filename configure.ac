@@ -1,9 +1,9 @@
 AC_INIT([CometSuite],
-        [0.9.4],
+        [0.9.5-dev],
         [Michael S. Kelley <msk@astro.umd.edu>],
         [cometsuite])
 AC_CONFIG_AUX_DIR(config)
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_MACRO_DIR(m4)
 AM_INIT_AUTOMAKE
 
@@ -31,12 +31,15 @@ if test x"${ac_cv_header_getxyz_h}" = xno; then
    AC_MSG_ERROR([getxyz.h not found.])
 fi
 
+AM_MISSING_PROG(HELP2MAN, help2man, $missing_dir)
+
 AC_CONFIG_FILES([
    Makefile
    doc/Makefile
    api/Doxyfile
    src/Makefile
    data/Makefile
+   test/Makefile
 ])
 
 AC_OUTPUT
