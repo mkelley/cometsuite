@@ -3,7 +3,7 @@ AC_INIT([CometSuite],
         [Michael S. Kelley <msk@astro.umd.edu>],
         [cometsuite])
 AC_CONFIG_AUX_DIR(config)
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_MACRO_DIR(m4)
 AM_INIT_AUTOMAKE
 
