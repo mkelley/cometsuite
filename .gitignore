@@ -47,6 +47,7 @@ doc/userguide/*.aux
 doc/*.info
 doc/stamp-vti
 doc/version.texi
+doc/*.1
 m4/*
 src/.deps
 test-results/*
