@@ -1,6 +1,11 @@
 
 Newsworthy notes for users of CometSuite.
-Copyright (C) 2010-2012 Michael S. Kelley
+Copyright (C) 2010-2013 Michael S. Kelley
+
+0.9.5 (09 Jul 2013)
+
+* Redefined --jet in xyz2fits and xyz2pds to use planetocentric
+  longitude and latitude, rather than a fixed point on the sky.
 
 0.9.4 (21 Jun 2012)
 
