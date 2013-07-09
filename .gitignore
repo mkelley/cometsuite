@@ -44,6 +44,8 @@ autom4te.cache/*
 doc/userguide/*.log
 doc/userguide/*.out
 doc/userguide/*.aux
+doc/cometsuite.html
+doc/cometsuite.t2p
 doc/*.info
 doc/stamp-vti
 doc/version.texi

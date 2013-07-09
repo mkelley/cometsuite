@@ -15,7 +15,7 @@ Requirements
 
 CometSuite requries libgetxyz, available at:
 
-    http://www.astro.umd.edu/~msk/projects/dust-dynamics/
+    http://www.astro.umd.edu/~msk/computing/libgetxyz
 
 Also required are cfitsio and CCfits from NASA's High Energy
 Astrophysics Science Archive Research Center:

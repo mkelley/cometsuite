@@ -418,11 +418,11 @@ Other options:\n\
   --version                     output version information and exit\n\
 \n\
 Report bugs to: msk@astro.umd.edu\n\
-" << PACKAGE_NAME << " home page:<http://www.astro.umd.edu/~msk/projects/dynamics/>\n";
+" << PACKAGE_NAME << " home page:<http://www.astro.umd.edu/~msk/science/dynamics/>\n";
 }
 
 /** Prints the program version screen. */
 void printVersion() {
   cout << SUBPROJECT << " (" << PACKAGE_NAME << ") " << VERSION << "\n\
-Copyright (C) 2012 Michael S. Kelley\n";
+Copyright (C) 2013 Michael S. Kelley\n";
 }
