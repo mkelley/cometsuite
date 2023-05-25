@@ -1,13 +1,11 @@
+# News
 
-Newsworthy notes for users of CometSuite.
-Copyright (C) 2010-2013 Michael S. Kelley
-
-0.9.5 (09 Jul 2013)
+## 0.9.5 (09 Jul 2013)
 
 * Redefined --jet in xyz2fits and xyz2pds to use planetocentric
   longitude and latitude, rather than a fixed point on the sky.
 
-0.9.4 (21 Jun 2012)
+## 0.9.4 (21 Jun 2012)
 
 * xyz2fits now has a preliminary implementation of nucleus rotation.
   It isn't exactly what I was going for, but it is working and seems
@@ -21,14 +19,14 @@ Copyright (C) 2010-2013 Michael S. Kelley
 
 * syn2ds9 can output in ecliptic coordinates.
 
-0.9.2 (14 Jun 2011)
+## 0.9.2 (14 Jun 2011)
 
 * integratelist, a program to integrate an xyzfile from the initial
   state (as opposed to integratexyz which integrates from the final
   state).  With integratelist, we can create xyzfiles that are just
   lists of grains to be integrated forward in time.
 
-0.9.1 (21 Jan 2011)
+## 0.9.1 (21 Jan 2011)
 
 * Important bug fix:  Pfunctions set with linear minima and maximum,
   but picked in log space where not properly executed: a call to log()
@@ -47,7 +45,7 @@ Copyright (C) 2010-2013 Michael S. Kelley
 
 * New particle functions JET and IMPACT.
 
-0.9.0 (28 July 2010)
+## 0.9.0 (28 July 2010)
 
 * Important bugfix from the 0.8.x series.  Grain ages in xyz2fits
   results were off by a factor of 86400.  This bug may have been
