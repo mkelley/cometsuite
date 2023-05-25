@@ -21,6 +21,11 @@ if test x"${ac_cv_lib_CCfits_exit}" = xno; then
    AC_MSG_ERROR(libCCfits not found.)
 fi
 
+AC_CHECK_LIB([cfitsio], [exit], [], AC_MSG_ERROR([libcfitsio not found.]))
+if test x"${ac_cv_lib_cftitsio_exit}" = xno; then
+   AC_MSG_ERROR(libcfitsio not found.)
+fi
+
 AC_CHECK_LIB([getxyz], [getxyz])
 if test x"${ac_cv_lib_getxyz_getxyz}" = xno; then
    AC_MSG_ERROR(libgetxyz not found.)
